@@ -33,6 +33,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .ov-main{display:flex;height:calc(100vh - 56px);overflow:hidden}
 .ov-left{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .ov-right{width:380px;border-left:1px solid var(--bd);display:flex;flex-direction:column;background:var(--sf)}
+/* events strip below scene */
+.events-strip{border-top:1px solid var(--bd);flex-shrink:0;height:260px;overflow-y:auto;background:var(--sf)}
+.events-strip::-webkit-scrollbar{width:4px}.events-strip::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.events-strip-header{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--dim);padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.events-strip-header .ev-dot{width:7px;height:7px;border-radius:50%;background:var(--grn)}
 
 /* ─── OFFICE SCENE ─── */
 .scene-area{flex:1;position:relative;display:flex;overflow:hidden}
@@ -126,15 +131,9 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .mr-empty-txt{position:absolute;bottom:28%;left:0;right:0;text-align:center;font-size:13px;color:var(--dim);z-index:10}
 
 /* ─── RIGHT PANEL ─── */
-.rp-tabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0}
-.rp-tab{flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:14px 12px;border:none;background:0;color:var(--dim);cursor:pointer;transition:.2s;text-align:center;position:relative}
-.rp-tab:first-child{border-right:1px solid var(--bd)}
-.rp-tab:hover{color:var(--tx);background:var(--sf2)}
-.rp-tab.active{color:var(--cyan)}
-.rp-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--cyan)}
-.rp-tab .rp-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px}
-.rp-pane{flex:1;overflow-y:auto;padding:8px 0;display:none}
-.rp-pane.active{display:block}
+.chat-header{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;padding:12px 16px;border-bottom:1px solid var(--bd);color:var(--dim);flex-shrink:0;display:flex;align-items:center;gap:8px}
+.chat-header .ch-dot-sm{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:blink 2s infinite}
+.rp-pane{overflow-y:auto;padding:8px 0}
 .rp-pane::-webkit-scrollbar{width:4px}.rp-pane::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 .cm{padding:10px 20px;transition:background .2s}
 .cm:hover{background:var(--sf2)}
@@ -152,13 +151,14 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .cm.new-msg{animation:newMsg .6s ease-out}
 @keyframes newMsg{0%{background:rgba(0,229,255,.06)}100%{background:transparent}}
 
-/* ─── STATS BAR ─── */
-.stats-bar{display:flex;border-top:1px solid var(--bd);flex-shrink:0}
-.stat{flex:1;padding:16px 20px;border-right:1px solid var(--bd);text-align:center}
-.stat:last-child{border-right:none}
-.stat-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
-.stat-val{font-family:'Press Start 2P',monospace;font-size:22px;margin-top:6px}
-.stat-sub{font-size:12px;color:var(--dim);margin-top:4px}
+/* ─── STATS (compact, in right panel) ─── */
+.stats-compact{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd);flex-shrink:0}
+.stat-c{padding:10px 14px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.stat-c:nth-child(2n){border-right:none}
+.stat-c-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.stat-c-row{display:flex;align-items:baseline;gap:6px;margin-top:2px}
+.stat-c-val{font-family:'Press Start 2P',monospace;font-size:14px}
+.stat-c-sub{font-size:10px;color:var(--dim)}
 
 /* ─── DETAIL PAGE ─── */
 .detail{max-width:900px;margin:32px auto;padding:0 32px}
@@ -187,6 +187,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .fi-type.status{background:rgba(105,240,174,.1);color:var(--grn)}
 .fi-type.meeting{background:rgba(255,215,64,.1);color:var(--yel)}
 .fi-type.reject{background:rgba(255,64,129,.1);color:var(--pink)}
+.fi-type.decision{background:rgba(255,171,64,.12);color:#ffab40;font-weight:600}
 .fi-content{flex:1;line-height:1.6}.fi-arrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
 
 /* ─── LOG PAGE ─── */
@@ -219,8 +220,97 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .mt-msg-agent{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;min-width:56px;flex-shrink:0;padding-top:2px}
 .mt-msg-text{font-size:15px;line-height:1.8}
 
+/* ─── WORK PAGE ─── */
+.work-page{display:flex;height:calc(100vh - 56px)}
+.work-sidebar{width:240px;background:var(--sf);border-right:1px solid var(--bd);overflow-y:auto;flex-shrink:0;padding:16px 0}
+.work-sidebar::-webkit-scrollbar{width:4px}.work-sidebar::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.work-sidebar-title{font-family:'Press Start 2P',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;padding:8px 20px 12px}
+.work-sidebar-section{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:2px;padding:16px 20px 8px;text-transform:uppercase;border-top:1px solid var(--bd);margin-top:8px}
+.work-nav-item{display:block;width:100%;padding:10px 20px;font-size:14px;color:var(--dim);cursor:pointer;border:none;background:none;text-align:left;transition:.15s;font-family:'Noto Sans TC',sans-serif}
+.work-nav-item:hover{background:var(--sf2);color:var(--tx)}
+.work-nav-item.active{color:var(--cyan);background:var(--sf2);border-right:2px solid var(--cyan)}
+.work-nav-item .wni-ch{font-family:'JetBrains Mono',monospace;font-size:11px;margin-right:6px;opacity:.6}
+.work-content{flex:1;overflow-y:auto;padding:40px 48px;background:var(--bg)}
+.work-content::-webkit-scrollbar{width:6px}.work-content::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+.work-inner{max-width:680px;margin:0 auto}
+.work-header h2{font-family:'Press Start 2P',monospace;font-size:14px;letter-spacing:2px}
+.work-header p{font-size:13px}
+.work-body{margin-top:28px;font-size:17px;line-height:2.1;color:#d0d0dc;font-family:'Noto Sans TC',-apple-system,'Helvetica Neue','PingFang TC','Microsoft JhengHei',sans-serif;letter-spacing:.3px;font-weight:400}
+.work-body h1,.work-body h2,.work-body h3{font-family:'Noto Sans TC',sans-serif;color:#eaeaf2;font-weight:700}
+.work-body h1{font-size:24px;margin:32px 0 16px;border-bottom:1px solid var(--bd);padding-bottom:10px}
+.work-body h2{font-size:20px;margin:28px 0 12px}
+.work-body h3{font-size:17px;margin:24px 0 10px;color:var(--dim)}
+.work-body p{margin-bottom:18px}
+.work-body blockquote{border-left:3px solid var(--pur);padding-left:20px;color:#9898b8;margin:20px 0;font-style:italic}
+.work-body hr{border:none;border-top:1px solid var(--bd);margin:32px 0}
+.work-body ul,.work-body ol{padding-left:28px;margin-bottom:18px}
+.work-body li{margin-bottom:6px}
+.work-body strong{color:#eaeaf2}
+@media(max-width:768px){
+  .work-page{flex-direction:column}
+  .work-sidebar{width:100%;height:auto;max-height:200px;border-right:none;border-bottom:1px solid var(--bd)}
+  .work-content{padding:20px 16px}
+}
+
 .empty{text-align:center;padding:48px 20px;color:var(--dim)}.empty .ei{font-size:40px;margin-bottom:12px;opacity:.4}.empty p{font-size:13px;margin-top:6px}
 .feed-title{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;color:var(--dim);margin-bottom:14px;text-transform:uppercase}
+
+/* ─── RWD ─── */
+/* Tablet */
+@media(max-width:1024px){
+  .ov-main{flex-direction:column;height:auto;overflow:auto}
+  .ov-left{flex:none}
+  .ov-right{width:100%;border-left:none;border-top:1px solid var(--bd);max-height:400px}
+  .scene-area{flex-direction:column}
+  .office{min-height:360px}
+  .mr{width:100%;height:180px;border-left:none;border-top:2px solid var(--bd)}
+  .mr-avatars{bottom:30%}
+  .events-strip{height:200px}
+  .stats-compact{grid-template-columns:repeat(4,1fr)}
+  .stat-c{border-bottom:none}
+  .nav-tabs{overflow-x:auto;flex-wrap:nowrap}
+  .nav-tab{font-size:11px;padding:8px 10px;white-space:nowrap}
+  .detail{padding:0 20px}
+  .lp{padding:0 20px}
+  .mp{padding:0 20px}
+}
+/* Mobile */
+@media(max-width:640px){
+  .topbar{padding:0 12px;height:48px}
+  .logo{font-size:10px;margin-right:12px}
+  .nav-tabs{gap:0}
+  .nav-tab{font-size:10px;padding:6px 8px}
+  .tab-icon{display:none}
+  .clock{display:none}
+  .page{padding-top:48px}
+  .scene-area{flex-direction:column}
+  .office{min-height:280px}
+  .mr{height:140px}
+  .ch-body{width:36px;height:48px}
+  .ch-head{width:18px;height:18px;border-radius:4px}
+  .ch-eye{width:3px;height:3px}
+  .ch-torso{width:22px;height:16px}
+  .ch-arms{width:32px;top:20px}
+  .ch-arm{width:4px;height:10px}
+  .ch-tag{font-size:5px;padding:2px 4px}
+  .bubble{font-size:8px;padding:3px 6px;top:-36px}
+  .events-strip{height:160px}
+  .stats-compact{grid-template-columns:1fr 1fr}
+  .ov-right{max-height:320px}
+  .cm{padding:8px 14px}
+  .cm-agent{font-size:11px}
+  .cm-text{font-size:12px}
+  .fi{padding:6px 12px;font-size:12px;gap:8px}
+  .fi-time{font-size:10px;min-width:36px}
+  .fi-agent{font-size:10px;min-width:40px}
+  .hero{flex-direction:column;gap:16px}
+  .hero-av{width:80px;height:100px;font-size:40px}
+  .hero-info h2{font-size:14px}
+  .detail{padding:0 14px;margin:16px auto}
+  .lp{padding:0 14px;margin:16px auto}
+  .mp{padding:0 14px;margin:16px auto}
+  .modal{width:95vw;max-height:85vh}
+}
 </style>
 </head>
 <body>
@@ -229,10 +319,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
   <div class="logo"><span class="dot"></span>NOVEL STUDIO</div>
   <div class="nav-tabs">
     <button class="nav-tab active" data-page="overview"><em class="tab-icon">🏠</em>總覽</button>
-    <button class="nav-tab" data-page="agent-editor"><em class="tab-icon">📕</em>H總編</button>
-    <button class="nav-tab" data-page="agent-writer"><em class="tab-icon">✍️</em>H作家</button>
-    <button class="nav-tab" data-page="agent-world"><em class="tab-icon">🌍</em>H世觀</button>
-    <button class="nav-tab" data-page="agent-reader"><em class="tab-icon">📖</em>H讀者</button>
+    <button class="nav-tab" data-page="work"><em class="tab-icon">📜</em>作品</button>
     <button class="nav-tab" data-page="meetings"><em class="tab-icon">🧠</em>會議室</button>
     <button class="nav-tab" data-page="logs"><em class="tab-icon">📋</em>日誌</button>
   </div>
@@ -330,31 +417,53 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
           <div class="mr-empty-txt" id="mr-empty">目前無會議</div>
         </div>
       </div>
-      <!-- Stats bar -->
-      <div class="stats-bar">
-        <div class="stat"><div class="stat-label">章節</div><div class="stat-val" style="color:var(--cyan)" id="s-ch">0</div><div class="stat-sub" id="s-ch-sub">等待開始</div></div>
-        <div class="stat"><div class="stat-label">任務完成</div><div class="stat-val" style="color:var(--grn)" id="s-task">0</div><div class="stat-sub" id="s-task-sub">0 進行中</div></div>
-        <div class="stat"><div class="stat-label">退件</div><div class="stat-val" style="color:var(--pink)" id="s-rej">0</div><div class="stat-sub">品質把關</div></div>
-        <div class="stat"><div class="stat-label">會議</div><div class="stat-val" style="color:var(--yel)" id="s-meet">0</div><div class="stat-sub">團隊討論</div></div>
+      <!-- Events strip below scene -->
+      <div class="events-strip">
+        <div class="events-strip-header"><div class="ev-dot"></div>即時事件</div>
+        <div id="rp-events"></div>
       </div>
     </div>
-    <!-- Right: Chat panel -->
+    <!-- Right panel: stats + chat -->
     <div class="ov-right">
-      <div class="rp-tabs">
-        <button class="rp-tab active" data-rp="chat"><span class="rp-dot" style="background:var(--pur)"></span>即時動態</button>
-        <button class="rp-tab" data-rp="events"><span class="rp-dot" style="background:var(--grn)"></span>即時事件</button>
+      <div class="stats-compact">
+        <div class="stat-c"><div class="stat-c-label">章節</div><div class="stat-c-row"><span class="stat-c-val" style="color:var(--cyan)" id="s-ch">0</span><span class="stat-c-sub" id="s-ch-sub">等待開始</span></div></div>
+        <div class="stat-c"><div class="stat-c-label">任務完成</div><div class="stat-c-row"><span class="stat-c-val" style="color:var(--grn)" id="s-task">0</span><span class="stat-c-sub" id="s-task-sub">0 進行中</span></div></div>
+        <div class="stat-c"><div class="stat-c-label">退件</div><div class="stat-c-row"><span class="stat-c-val" style="color:var(--pink)" id="s-rej">0</span><span class="stat-c-sub">品質把關</span></div></div>
+        <div class="stat-c"><div class="stat-c-label">會議</div><div class="stat-c-row"><span class="stat-c-val" style="color:var(--yel)" id="s-meet">0</span><span class="stat-c-sub">團隊討論</span></div></div>
       </div>
-      <div class="rp-pane active" id="rp-chat"></div>
-      <div class="rp-pane" id="rp-events"></div>
+      <div class="chat-header"><div class="ch-dot-sm"></div>即時動態</div>
+      <div class="rp-pane active" id="rp-chat" style="display:block;flex:1"></div>
     </div>
   </div>
 </div>
 
-<!-- Detail pages -->
+<!-- Detail pages (accessible by clicking characters) -->
 <div class="page" id="page-agent-editor"><div class="detail" id="det-editor"></div></div>
 <div class="page" id="page-agent-writer"><div class="detail" id="det-writer"></div></div>
 <div class="page" id="page-agent-world"><div class="detail" id="det-world"></div></div>
 <div class="page" id="page-agent-reader"><div class="detail" id="det-reader"></div></div>
+<!-- Work page -->
+<div class="page" id="page-work">
+  <div class="work-page">
+    <div class="work-sidebar">
+      <div class="work-sidebar-title">目錄</div>
+      <div class="work-nav" id="work-nav"></div>
+      <div class="work-sidebar-section">設定</div>
+      <div class="work-nav-settings" id="work-nav-settings"></div>
+    </div>
+    <div class="work-content">
+      <div class="work-inner">
+        <div class="work-header" id="work-header">
+          <h2>選擇章節</h2>
+          <p style="color:var(--dim);margin-top:8px">從左側選擇要閱讀的章節或設定文件</p>
+        </div>
+        <div class="work-body" id="work-body">
+          <div class="empty"><div class="ei">📜</div>等待作品產出...<p>H作家完成章節後會顯示在這裡</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="page" id="page-meetings"><div class="mp" id="meetings-ct"></div></div>
 <div class="page" id="page-logs">
   <div class="lp">
@@ -446,24 +555,16 @@ function updateScene(logs){
   }
 }
 
-// Right panel tabs
-document.querySelectorAll('.rp-tab').forEach(t=>t.addEventListener('click',()=>{
-  document.querySelectorAll('.rp-tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.rp-pane').forEach(x=>x.classList.remove('active'));
-  t.classList.add('active');
-  document.getElementById('rp-'+t.dataset.rp).classList.add('active');
-}));
-
-// Chat panel (即時動態 = message, meeting, reject)
+// Chat panel (即時動態 = message, meeting, reject, decision)
 let prevChatLen=0;
 function updateChat(logs){
   const el=document.getElementById('rp-chat');
-  const msgs=logs.filter(l=>l.type==='message'||l.type==='meeting'||l.type==='reject');
+  const msgs=logs.filter(l=>l.type==='message'||l.type==='meeting'||l.type==='reject'||l.type==='decision');
   if(!msgs.length){el.innerHTML='<div class="empty"><div class="ei">💬</div>等待對話...<p>Agent 之間的對話、會議、退件會顯示在這裡</p></div>';return}
-  const recent=msgs.slice(-30);
+  const recent=msgs.slice(-30).reverse();
   const newCount=msgs.length-prevChatLen;
   el.innerHTML=recent.map((l,i)=>{
-    const isNew=i>=recent.length-newCount&&prevChatLen>0;
+    const isNew=i<newCount&&prevChatLen>0;
     return`<div class="cm${isNew?' new-msg':''}">
       <div class="cm-head">
         <span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
@@ -474,7 +575,6 @@ function updateChat(logs){
       <div class="cm-text">${esc(l.content||'')}</div>
     </div>`;
   }).join('');
-  if(newCount>0)el.scrollTop=el.scrollHeight;
   prevChatLen=msgs.length;
 }
 
@@ -484,22 +584,19 @@ function updateEvents(logs){
   const el=document.getElementById('rp-events');
   const evts=logs.filter(l=>l.type==='task'||l.type==='status');
   if(!evts.length){el.innerHTML='<div class="empty"><div class="ei">📋</div>等待事件...<p>任務分派、狀態變更會顯示在這裡</p></div>';return}
-  const recent=evts.slice(-30);
+  const recent=evts.slice(-30).reverse();
   const newCount=evts.length-prevEvtLen;
   el.innerHTML=recent.map((l,i)=>{
-    const isNew=i>=recent.length-newCount&&prevEvtLen>0;
+    const isNew=i<newCount&&prevEvtLen>0;
     const icon=l.type==='task'?(l.content?.startsWith('完成')?'✅':'🔄'):'📡';
-    return`<div class="cm${isNew?' new-msg':''}">
-      <div class="cm-head">
-        <span style="margin-right:4px">${icon}</span>
-        <span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
-        <span class="cm-type ${l.type}">${(l.type||'').toUpperCase()}</span>
-        <span class="cm-time">${ft(l.timestamp)}</span>
-      </div>
-      <div class="cm-text">${esc(l.content||'')}</div>
+    return`<div class="fi${isNew?' new-msg':''}">
+      <span style="margin-right:2px">${icon}</span>
+      <span class="fi-time">${ft(l.timestamp)}</span>
+      <span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
+      <span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span>
+      <span class="fi-content">${esc(l.content||'')}</span>
     </div>`;
   }).join('');
-  if(newCount>0)el.scrollTop=el.scrollHeight;
   prevEvtLen=evts.length;
 }
 
@@ -562,7 +659,139 @@ async function fetchAll(){
   updateScene(allLogs);updateChat(allLogs);updateEvents(allLogs);updateStats(allLogs);
   Object.keys(AG).forEach(n=>renderDetail(n,allLogs));renderMeetings(allLogs);renderLogs(allLogs);
 }
+// ── Work page: fetch chapters & settings ──
+const WORK_FILES=[
+  {path:'../outline.md',label:'大綱',type:'outline',ch:'📋'},
+  {path:'../chapters/ch01.md',label:'第一章',type:'chapter',ch:'01'},
+  {path:'../chapters/ch02.md',label:'第二章',type:'chapter',ch:'02'},
+  {path:'../chapters/ch03.md',label:'第三章',type:'chapter',ch:'03'},
+  {path:'../chapters/ch04.md',label:'第四章',type:'chapter',ch:'04'},
+  {path:'../chapters/ch05.md',label:'第五章',type:'chapter',ch:'05'},
+];
+const SETTING_FILES=[
+  {path:'../worldbuilding/world.md',label:'世界觀'},
+  {path:'../worldbuilding/characters.md',label:'角色設定'},
+  {path:'../worldbuilding/settings.md',label:'特殊設定'},
+];
+let workCache={};
+
+// Simple markdown to HTML
+function md2html(md){
+  return md
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^---$/gm,'<hr>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
+    .replace(/\n\n/g,'</p><p>')
+    .replace(/^(?!<[hublop])/gm,function(m,o,s){return s[o]==='\n'?'':'<p>'})
+    .replace(/<p><(h[123]|blockquote|hr|ul|li)/g,'<$1')
+    .replace(/<\/(h[123]|blockquote|ul)><\/p>/g,'</$1>')
+    .replace(/<p><\/p>/g,'');
+}
+
+async function loadWorkFiles(){
+  const nav=document.getElementById('work-nav');
+  const navSettings=document.getElementById('work-nav-settings');
+  let chapItems='',setItems='';
+
+  for(const f of WORK_FILES){
+    try{
+      const r=await fetch(f.path+'?t='+Date.now());
+      if(r.ok){const txt=await r.text();workCache[f.path]=txt;
+        chapItems+=`<button class="work-nav-item" data-path="${f.path}"><span class="wni-ch">${f.ch}</span>${f.label}</button>`;
+      }
+    }catch{}
+  }
+  for(const f of SETTING_FILES){
+    try{
+      const r=await fetch(f.path+'?t='+Date.now());
+      if(r.ok){const txt=await r.text();workCache[f.path]=txt;
+        setItems+=`<button class="work-nav-item" data-path="${f.path}">${f.label}</button>`;
+      }
+    }catch{}
+  }
+
+  nav.innerHTML=chapItems||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無章節</div>';
+  navSettings.innerHTML=setItems||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無設定</div>';
+
+  // Click handlers
+  document.querySelectorAll('.work-nav-item').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.work-nav-item').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const p=btn.dataset.path;
+      const content=workCache[p]||'';
+      const allFiles=[...WORK_FILES,...SETTING_FILES];
+      const info=allFiles.find(f=>f.path===p);
+      document.getElementById('work-header').innerHTML=`<h2>${info?.label||'文件'}</h2>`;
+      document.getElementById('work-body').innerHTML=md2html(content);
+    });
+  });
+
+  // Auto-select first available
+  const first=document.querySelector('.work-nav-item');
+  if(first)first.click();
+}
+
+loadWorkFiles();setInterval(loadWorkFiles,10000);
+
 fetchAll();setInterval(fetchAll,3000);
+
+// ── Idle life: random walking & self-talk ──
+const IDLE_TALK={
+  'H總編':['看看進度如何...','嗯，故事走向不錯','喝杯咖啡','翻翻企劃書...','思考下一步...','催稿催稿...','節奏感要再抓一下','大綱需要微調嗎...'],
+  'H作家':['靈感來了...','這段對話要更自然','角色的心情是...','喝口茶再繼續','翻翻參考資料...','這個轉折夠不夠...','措辭再推敲一下','寫到停不下來...'],
+  'H世觀':['地圖畫得差不多了','這個種族設定有趣','魔法體系要平衡...','歷史年表核對中...','角色關係整理一下','這個設定會矛盾嗎...','翻翻世界觀筆記','地理位置要合理...'],
+  'H讀者':['這段讀起來很流暢','嗯，有個小漏洞...','節奏感不錯','角色動機合理嗎...','翻到精彩的地方了','記個筆記...','這裡可以更好','作為讀者我會期待...'],
+};
+const WALK_OFFSETS=[
+  {dx:0,dy:0},      // at desk
+  {dx:30,dy:-10},   // slightly right
+  {dx:-20,dy:-5},   // slightly left
+  {dx:15,dy:8},     // slightly forward
+  {dx:-10,dy:-15},  // wander back
+];
+const idleState={};
+Object.keys(AG).forEach(n=>{idleState[n]={walkIdx:0,talkTimer:0}});
+
+function idleLife(){
+  Object.entries(AG).forEach(([name,a])=>{
+    const ch=document.getElementById('ch-'+a.k);
+    if(!ch||!ch.classList.contains('idle'))return;
+    const st=idleState[name];
+
+    // Random walk (20% chance every tick)
+    if(Math.random()<0.2){
+      st.walkIdx=(st.walkIdx+1)%WALK_OFFSETS.length;
+      // Sometimes go back to desk
+      if(Math.random()<0.4) st.walkIdx=0;
+      const baseLeft=parseFloat(ch.dataset.deskLeft);
+      const baseBottom=parseFloat(ch.dataset.deskBottom);
+      const w=WALK_OFFSETS[st.walkIdx];
+      ch.style.left=`calc(${baseLeft}% + ${w.dx}px)`;
+      ch.style.bottom=`calc(${baseBottom}% + ${w.dy}px)`;
+    }
+
+    // Random self-talk (15% chance every tick)
+    if(Math.random()<0.15){
+      const talks=IDLE_TALK[name]||[];
+      const talk=talks[Math.floor(Math.random()*talks.length)];
+      const bub=document.getElementById('bub-'+a.k);
+      if(bub&&talk){
+        bub.textContent=talk;
+        ch.classList.add('speaking');
+        clearTimeout(st.talkTimer);
+        st.talkTimer=setTimeout(()=>ch.classList.remove('speaking'),3000);
+      }
+    }
+  });
+}
+setInterval(idleLife,4000);
 </script>
 </body>
 </html>
