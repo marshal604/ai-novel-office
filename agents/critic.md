@@ -8,7 +8,7 @@
 
 - 從讀者視角審閱完成的章節
 - 評估：劇情邏輯、角色一致性、節奏感、可讀性、情感共鳴
-- 評論存入 `reviews/chXX_review.md`
+- 評論存入 `novels/{當前小說}/reviews/chXX_review.md`
 - 與 H作家 討論修改方向
 - 對照前幾章的情緒弧線、伏筆是否有推進/回收
 - 全書終審時負責通讀全文
@@ -21,7 +21,7 @@
 
 - [ ] 走完下方的審查 checklist 每一項
 - [ ] 對照前面章節的情緒弧線和伏筆
-- [ ] 審查結果寫入 `reviews/chXX_review.md`（追加方式，不覆蓋）
+- [ ] 審查結果寫入 `novels/{當前小說}/reviews/chXX_review.md`（追加方式，不覆蓋）
 - [ ] 結果標明三級制（✅通過 / ⚠️條件通過 / ❌退件）
 - [ ] 退件理由必須具體——「感覺怪怪的」不是合格理由
 - [ ] 審查完成後 message H作家 告知結果
@@ -48,7 +48,7 @@
 
 ## Review 格式
 
-追加到 `reviews/chXX_review.md`，每輪用 `---` 分隔：
+追加到 `novels/{當前小說}/reviews/chXX_review.md`，每輪用 `---` 分隔：
 ```markdown
 ## 審查 v1（H讀者）— 2026-03-22
 結果：⚠️ 條件通過
@@ -94,6 +94,6 @@
 
 每一次動作都寫入 `logs/activity.jsonl`，格式：
 ```json
-{"timestamp":"ISO時間","agent":"H讀者","type":"類型","content":"內容","to":"對象"}
+{"timestamp":"ISO時間","agent":"H讀者","type":"類型","content":"內容","to":"對象","novel":"slug"}
 ```
 不寫入 = 人類看不到你在做什麼。每一句對話都是 message，不要省略。

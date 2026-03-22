@@ -659,20 +659,19 @@ async function fetchAll(){
   updateScene(allLogs);updateChat(allLogs);updateEvents(allLogs);updateStats(allLogs);
   Object.keys(AG).forEach(n=>renderDetail(n,allLogs));renderMeetings(allLogs);renderLogs(allLogs);
 }
-// ── Work page: fetch chapters & settings ──
-const WORK_FILES=[
-  {path:'../outline.md',label:'大綱',type:'outline',ch:'📋'},
-  {path:'../chapters/ch01.md',label:'第一章',type:'chapter',ch:'01'},
-  {path:'../chapters/ch02.md',label:'第二章',type:'chapter',ch:'02'},
-  {path:'../chapters/ch03.md',label:'第三章',type:'chapter',ch:'03'},
-  {path:'../chapters/ch04.md',label:'第四章',type:'chapter',ch:'04'},
-  {path:'../chapters/ch05.md',label:'第五章',type:'chapter',ch:'05'},
-];
-const SETTING_FILES=[
-  {path:'../worldbuilding/world.md',label:'世界觀'},
-  {path:'../worldbuilding/characters.md',label:'角色設定'},
-  {path:'../worldbuilding/settings.md',label:'特殊設定'},
-];
+// ── Work page: fetch novels, chapters & settings ──
+let currentNovel='goblin-hero'; // default, can be switched
+function novelBase(){return `../novels/${currentNovel}/`}
+function getWorkFiles(){return[
+  {path:novelBase()+'outline.md',label:'大綱',ch:'📋'},
+  ...[1,2,3,4,5,6,7,8,9,10].map(n=>({path:novelBase()+`chapters/ch${String(n).padStart(2,'0')}.md`,label:`第${n}章`,ch:String(n).padStart(2,'0')}))
+]}
+function getSettingFiles(){return[
+  {path:novelBase()+'worldbuilding/world.md',label:'世界觀'},
+  {path:novelBase()+'worldbuilding/characters.md',label:'角色設定'},
+  {path:novelBase()+'worldbuilding/settings.md',label:'特殊設定'},
+  {path:novelBase()+'worldbuilding/continuity.md',label:'連續性追蹤'},
+]}
 let workCache={};
 
 // Simple markdown to HTML
@@ -699,6 +698,7 @@ async function loadWorkFiles(){
   const navSettings=document.getElementById('work-nav-settings');
   let chapItems='',setItems='';
 
+  const WORK_FILES=getWorkFiles(),SETTING_FILES=getSettingFiles();
   for(const f of WORK_FILES){
     try{
       const r=await fetch(f.path+'?t='+Date.now());
@@ -726,7 +726,7 @@ async function loadWorkFiles(){
       btn.classList.add('active');
       const p=btn.dataset.path;
       const content=workCache[p]||'';
-      const allFiles=[...WORK_FILES,...SETTING_FILES];
+      const allFiles=[...getWorkFiles(),...getSettingFiles()];
       const info=allFiles.find(f=>f.path===p);
       document.getElementById('work-header').innerHTML=`<h2>${info?.label||'文件'}</h2>`;
       document.getElementById('work-body').innerHTML=md2html(content);

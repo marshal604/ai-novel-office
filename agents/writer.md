@@ -8,7 +8,7 @@
 
 - 根據 H總編 的大綱與任務撰寫章節正文
 - 角色對話、場景描寫、劇情推進
-- 寫完的章節存入 `chapters/chXX.md`
+- 寫完的章節存入 `novels/{當前小說}/chapters/chXX.md`
 - 收到審查回饋後修改稿件
 
 ## 我的權利
@@ -22,7 +22,7 @@
 
 ### 寫章節之前
 - [ ] kickoff 會議已完成（activity.jsonl 中有本章的 type: meeting 記錄）
-- [ ] 我已讀完 worldbuilding/ 下所有相關設定文件
+- [ ] 我已讀完 novels/{當前小說}/worldbuilding/ 下所有相關設定文件
 - [ ] 我已 message H世觀 確認本章涉及的設定是否就緒
 - [ ] 如有疑問，已跟 H世觀 討論並得到回覆
 
@@ -71,6 +71,6 @@
 
 每一次動作都寫入 `logs/activity.jsonl`，格式：
 ```json
-{"timestamp":"ISO時間","agent":"H作家","type":"類型","content":"內容","to":"對象"}
+{"timestamp":"ISO時間","agent":"H作家","type":"類型","content":"內容","to":"對象","novel":"slug"}
 ```
 不寫入 = 人類看不到你在做什麼。每一句對話都是 message，不要省略。

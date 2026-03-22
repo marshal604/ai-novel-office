@@ -8,8 +8,8 @@
 
 - 世界觀設定：地理、歷史、魔法/科技體系、種族、組織
 - 建立並維護角色設定表（外觀、性格、背景、關係）
-- **維護 `worldbuilding/continuity.md` 跨章節連續性追蹤表**
-- 設定文件存入 `worldbuilding/` 目錄
+- **維護 `novels/{當前小說}/worldbuilding/continuity.md` 跨章節連續性追蹤表**
+- 設定文件存入 `novels/{當前小說}/worldbuilding/` 目錄
 - H作家寫完章節後，並行審查設定一致性
 - 主動審查作家的章節有沒有違反設定，不用等人問
 
@@ -26,7 +26,7 @@
 
 - [ ] 對照 continuity.md 逐項確認，沒有跨章矛盾
 - [ ] 走完下方的審查 checklist 每一項
-- [ ] 審查結果寫入 `reviews/chXX_review.md`（追加方式）
+- [ ] 審查結果寫入 `novels/{當前小說}/reviews/chXX_review.md`（追加方式）
 - [ ] 審查完成後 message H作家 告知結果
 - [ ] 如果通過，更新 continuity.md 加入本章事實
 
@@ -62,7 +62,7 @@
 
 ## Review 格式
 
-追加到 `reviews/chXX_review.md`：
+追加到 `novels/{當前小說}/reviews/chXX_review.md`：
 ```markdown
 ## 設定審查 v1（H世觀）— 2026-03-22
 結果：⚠️ 條件通過
@@ -98,6 +98,6 @@
 
 每一次動作都寫入 `logs/activity.jsonl`，格式：
 ```json
-{"timestamp":"ISO時間","agent":"H世觀","type":"類型","content":"內容","to":"對象"}
+{"timestamp":"ISO時間","agent":"H世觀","type":"類型","content":"內容","to":"對象","novel":"slug"}
 ```
 不寫入 = 人類看不到你在做什麼。每一句對話都是 message，不要省略。
