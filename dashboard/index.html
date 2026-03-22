@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novel Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Press+Start+2P&display=swap');
+:root{
+  --bg:#08080e;--sf:#0f0f1a;--sf2:#161626;--sf3:#1e1e32;--bd:#2e2e4a;
+  --tx:#eaeaf2;--dim:#8888a8;
+  --pink:#ff4081;--cyan:#00e5ff;--yel:#ffd740;--grn:#69f0ae;--pur:#b388ff;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;min-height:100vh}
+
+/* ─── NAV ─── */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,14,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 28px;height:56px}
+.logo{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--pink);letter-spacing:2px;margin-right:36px;white-space:nowrap}
+.logo .dot{display:inline-block;width:8px;height:8px;background:var(--grn);border-radius:50%;margin-right:10px;animation:blink 2s infinite}
+.nav-tabs{display:flex;gap:4px;flex:1}
+.nav-tab{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 18px;border:none;background:0;color:var(--dim);cursor:pointer;border-radius:6px 6px 0 0;transition:.2s;position:relative}
+.nav-tab:hover{color:var(--tx);background:var(--sf2)}
+.nav-tab.active{color:var(--cyan);background:var(--sf2)}
+.nav-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--cyan)}
+.tab-icon{margin-right:6px;font-style:normal}
+.clock{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim);margin-left:auto}
+
+/* ─── PAGES ─── */
+.page{display:none;padding-top:56px;min-height:100vh}.page.active{display:block}
+
+/* ─── OVERVIEW LAYOUT ─── */
+.ov-main{display:flex;height:calc(100vh - 56px);overflow:hidden}
+.ov-left{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.ov-right{width:380px;border-left:1px solid var(--bd);display:flex;flex-direction:column;background:var(--sf)}
+
+/* ─── OFFICE SCENE ─── */
+.scene-area{flex:1;position:relative;display:flex;overflow:hidden}
+.office{position:relative;flex:1;background:var(--sf);overflow:hidden}
+.mr{position:relative;width:220px;background:var(--sf);border-left:2px solid var(--bd);overflow:hidden;cursor:pointer;transition:background .2s}
+.mr:hover{background:var(--sf2)}
+
+/* office internals */
+.wall{position:absolute;top:0;left:0;right:0;height:55%;background:linear-gradient(to bottom,#12101e,#18162e)}
+.floor{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,#1a1828,#14121f);border-top:2px solid #2e2850}
+.floor::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 119px,rgba(46,40,80,.15) 119px,rgba(46,40,80,.15) 120px)}
+
+/* shelves */
+.shelf{position:absolute;background:#2e2850;height:8px;border-radius:2px}
+.book{position:absolute;width:9px;border-radius:1px}
+
+/* window */
+.window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:140px;height:100px;border:3px solid #3e3870;border-radius:6px;background:linear-gradient(to bottom,#1a1840,#0e0c28);overflow:hidden}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
+.moon{position:absolute;top:14px;right:18px;width:22px;height:22px;background:radial-gradient(circle at 60% 40%,#fffde7,#ffd54f);border-radius:50%;box-shadow:0 0 14px rgba(255,213,79,.4)}
+
+/* crystals */
+.crystal{position:absolute;width:10px;height:16px;clip-path:polygon(50% 0%,100% 40%,80% 100%,20% 100%,0% 40%);animation:float 4s ease-in-out infinite;z-index:5}
+/* lamp */
+.lamp{position:absolute;z-index:5}
+.lamp-glow{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,50,.5),transparent);margin:0 auto;animation:lampGlow 3s ease-in-out infinite}
+.lamp-base{width:5px;height:30px;background:#3a3560;margin:0 auto}
+/* particles */
+.ptc{position:absolute;width:2px;height:2px;border-radius:50%;opacity:.3;pointer-events:none;animation:ptcUp 8s linear infinite;z-index:4}
+@keyframes ptcUp{0%{transform:translateY(0);opacity:0}20%{opacity:.4}80%{opacity:.1}100%{transform:translateY(-200px);opacity:0}}
+
+/* desks */
+.desk{position:absolute;z-index:10}
+.dsk{width:130px;height:46px;background:linear-gradient(135deg,#3d3558,#2d2848);border:1px solid #4a4574;border-radius:4px;position:relative}
+.dsk-leg{position:absolute;bottom:-18px;width:5px;height:18px;background:#2d2848}
+.dsk-leg.l{left:10px}.dsk-leg.r{right:10px}
+.mon{position:absolute;top:-26px;left:50%;transform:translateX(-50%);width:38px;height:24px;background:#111;border:2px solid #4a4574;border-radius:3px;overflow:hidden}
+.mon-scr{width:100%;height:100%;background:#0a1628}
+.mon-scr.typing{animation:scFlk .7s infinite}
+@keyframes scFlk{0%,100%{background:#0a1628}50%{background:#12244a}}
+
+/* ─── CHARACTERS (bigger) ─── */
+.ch{position:absolute;z-index:20;cursor:pointer;transition:left .8s ease,bottom .8s ease,transform .15s}
+.ch:hover{transform:scale(1.15)}
+.ch-body{position:relative;width:56px;height:70px;display:flex;flex-direction:column;align-items:center}
+.ch-head{width:28px;height:28px;border-radius:7px;position:relative;z-index:2}
+.ch-eyes{position:absolute;top:11px;left:5px;right:5px;display:flex;justify-content:space-between}
+.ch-eye{width:4px;height:4px;background:#111;border-radius:50%}
+.ch-torso{width:32px;height:22px;border-radius:5px 5px 3px 3px;margin-top:-4px;z-index:1}
+.ch-arms{position:absolute;top:26px;width:44px;display:flex;justify-content:space-between}
+.ch-arm{width:6px;height:14px;border-radius:3px}
+.ch-arm.typing{animation:armT .5s infinite alternate}
+@keyframes armT{0%{transform:rotate(-6deg)}100%{transform:rotate(6deg)}}
+.ch-tag{font-family:'Press Start 2P',monospace;font-size:8px;letter-spacing:1px;padding:3px 7px;background:rgba(0,0,0,.75);border-radius:3px;white-space:nowrap;margin-top:4px;text-align:center}
+.ch-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);z-index:30}
+.ch-dot.idle{background:var(--dim)}.ch-dot.working{background:var(--grn);animation:blink 1.5s infinite}
+.ch-dot.reviewing{background:var(--yel)}.ch-dot.meeting{background:var(--pur);animation:blink 1s infinite}
+/* bubble */
+.bubble{position:absolute;top:-48px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.88);border:1px solid;border-radius:8px;padding:5px 12px;font-size:12px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
+.bubble::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(0,0,0,.88)}
+.ch:hover .bubble,.ch.speaking .bubble{opacity:1}
+.ch.idle .ch-body{animation:breathe 3s ease-in-out infinite}
+.ch.working .ch-body{animation:workB 1.5s ease-in-out infinite}
+.ch.meeting .ch-body{animation:meetG 2s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes workB{0%,100%{transform:translateY(0)}25%{transform:translateY(-4px) rotate(-1deg)}75%{transform:translateY(-1px) rotate(1deg)}}
+@keyframes meetG{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3) drop-shadow(0 0 8px var(--pur))}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.15}}
+@keyframes lampGlow{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.2)}}
+.scene-label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:'Press Start 2P',monospace;font-size:8px;color:var(--dim);letter-spacing:3px;z-index:30;opacity:.5}
+
+/* ─── Meeting Room ─── */
+.mr-label{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'Press Start 2P',monospace;font-size:8px;color:var(--pur);letter-spacing:2px;z-index:20;opacity:.6}
+.mr-wall{position:absolute;top:0;left:0;right:0;height:55%;background:linear-gradient(to bottom,#16102e,#1e163a)}
+.mr-floor{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,#1a1828,#14121f);border-top:2px solid #2e2850}
+.mr-table{position:absolute;bottom:40%;left:50%;transform:translateX(-50%);width:80px;height:40px;background:linear-gradient(135deg,#4a3d2e,#3a2f22);border:1px solid #5a4d3e;border-radius:50%;z-index:5}
+.mr-papers{position:absolute;top:8px;left:20px;width:36px;height:22px;background:#d4c5a9;border-radius:2px;transform:rotate(-5deg)}
+.mr-candle{position:absolute;top:30%;right:24px;z-index:5}
+.mr-candle-body{width:5px;height:14px;background:#d4c5a9;margin:0 auto;border-radius:1px}
+.mr-flame{width:6px;height:10px;background:radial-gradient(ellipse at bottom,#ffd740,#ff6d00 60%,transparent);border-radius:50% 50% 20% 20%;margin:0 auto -2px;animation:flicker 1s infinite alternate}
+@keyframes flicker{0%{transform:scaleY(1) scaleX(1)}50%{transform:scaleY(1.2) scaleX(.8)}100%{transform:scaleY(.9) scaleX(1.1)}}
+.mr-badge{position:absolute;top:38px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 12px;border-radius:4px;z-index:20;white-space:nowrap}
+.mr-badge.on{background:rgba(179,136,255,.15);color:var(--pur);border:1px solid rgba(179,136,255,.4);animation:blink 1.5s infinite}
+.mr-badge.off{background:rgba(136,136,168,.08);color:var(--dim);border:1px solid rgba(136,136,168,.2)}
+.mr-avatars{position:absolute;bottom:20%;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:10}
+.mr-av{text-align:center}
+.mr-av-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;margin:0 auto}
+.mr-av-name{font-family:'Press Start 2P',monospace;font-size:6px;margin-top:4px}
+.mr-empty-txt{position:absolute;bottom:28%;left:0;right:0;text-align:center;font-size:13px;color:var(--dim);z-index:10}
+
+/* ─── RIGHT PANEL ─── */
+.rp-tabs{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0}
+.rp-tab{flex:1;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:14px 12px;border:none;background:0;color:var(--dim);cursor:pointer;transition:.2s;text-align:center;position:relative}
+.rp-tab:first-child{border-right:1px solid var(--bd)}
+.rp-tab:hover{color:var(--tx);background:var(--sf2)}
+.rp-tab.active{color:var(--cyan)}
+.rp-tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--cyan)}
+.rp-tab .rp-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px}
+.rp-pane{flex:1;overflow-y:auto;padding:8px 0;display:none}
+.rp-pane.active{display:block}
+.rp-pane::-webkit-scrollbar{width:4px}.rp-pane::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.cm{padding:10px 20px;transition:background .2s}
+.cm:hover{background:var(--sf2)}
+.cm-head{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.cm-agent{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+.cm-arrow{color:var(--dim);font-size:12px}
+.cm-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);margin-left:auto}
+.cm-type{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 7px;border-radius:3px;letter-spacing:1px}
+.cm-type.message{background:rgba(179,136,255,.1);color:var(--pur)}
+.cm-type.meeting{background:rgba(255,215,64,.1);color:var(--yel)}
+.cm-type.reject{background:rgba(255,64,129,.1);color:var(--pink)}
+.cm-type.task{background:rgba(0,229,255,.1);color:var(--cyan)}
+.cm-type.status{background:rgba(105,240,174,.1);color:var(--grn)}
+.cm-text{font-size:14px;line-height:1.7;color:var(--tx);padding-left:2px}
+.cm.new-msg{animation:newMsg .6s ease-out}
+@keyframes newMsg{0%{background:rgba(0,229,255,.06)}100%{background:transparent}}
+
+/* ─── STATS BAR ─── */
+.stats-bar{display:flex;border-top:1px solid var(--bd);flex-shrink:0}
+.stat{flex:1;padding:16px 20px;border-right:1px solid var(--bd);text-align:center}
+.stat:last-child{border-right:none}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+.stat-val{font-family:'Press Start 2P',monospace;font-size:22px;margin-top:6px}
+.stat-sub{font-size:12px;color:var(--dim);margin-top:4px}
+
+/* ─── DETAIL PAGE ─── */
+.detail{max-width:900px;margin:32px auto;padding:0 32px}
+.hero{display:flex;gap:32px;align-items:flex-start;margin-bottom:36px}
+.hero-av{width:120px;height:140px;background:var(--sf);border:2px solid var(--bd);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:56px;position:relative;flex-shrink:0}
+.hero-st{position:absolute;bottom:8px;right:8px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;letter-spacing:1px}
+.hero-info{flex:1}
+.hero-info h2{font-family:'Press Start 2P',monospace;font-size:18px;letter-spacing:2px}
+.hero-role{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
+.hero-desc{font-size:15px;color:var(--dim);margin-top:12px;line-height:1.8}
+.hero-nums{display:flex;gap:28px;margin-top:18px}
+.hn{text-align:center}.hn-v{font-family:'Press Start 2P',monospace;font-size:18px}.hn-l{font-size:12px;color:var(--dim);margin-top:4px}
+.sec{background:var(--sf);border:1px solid var(--bd);border-radius:8px;margin-bottom:16px;overflow:hidden}
+.sec-h{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;padding:14px 20px;border-bottom:1px solid var(--bd);text-transform:uppercase;color:var(--dim)}
+.sec-b{padding:8px 12px;max-height:400px;overflow-y:auto}
+.sec-b::-webkit-scrollbar{width:4px}.sec-b::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+
+/* ─── FEED ITEMS (shared) ─── */
+.fi{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(46,46,74,.3);font-size:14px;transition:background .15s}
+.fi:hover{background:var(--sf2)}.fi:last-child{border-bottom:none}
+.fi-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);min-width:48px}
+.fi-agent{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;min-width:52px}
+.fi-type{font-family:'JetBrains Mono',monospace;font-size:10px;padding:2px 8px;border-radius:3px;letter-spacing:1px;min-width:60px;text-align:center}
+.fi-type.task{background:rgba(0,229,255,.1);color:var(--cyan)}
+.fi-type.message{background:rgba(179,136,255,.1);color:var(--pur)}
+.fi-type.status{background:rgba(105,240,174,.1);color:var(--grn)}
+.fi-type.meeting{background:rgba(255,215,64,.1);color:var(--yel)}
+.fi-type.reject{background:rgba(255,64,129,.1);color:var(--pink)}
+.fi-content{flex:1;line-height:1.6}.fi-arrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+
+/* ─── LOG PAGE ─── */
+.lp{max-width:1000px;margin:32px auto;padding:0 32px}
+.lp-filters{display:flex;gap:8px;margin-bottom:20px}
+.lf-btn{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--bd);border-radius:6px;background:0;color:var(--dim);cursor:pointer;transition:.2s;text-transform:uppercase}
+.lf-btn:hover,.lf-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.05)}
+.feed-list{background:var(--sf);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+
+/* ─── MEETING PAGE ─── */
+.mp{max-width:900px;margin:32px auto;padding:0 32px}
+.m-card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:24px;margin-bottom:20px}
+.m-card-h{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.m-body{font-size:15px;line-height:1.9;white-space:pre-wrap;background:var(--sf2);padding:20px;border-radius:8px}
+
+/* ─── MODAL ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--sf);border:1px solid var(--bd);border-radius:10px;width:720px;max-width:90vw;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--bd)}
+.modal-hdr h3{font-family:'Press Start 2P',monospace;font-size:12px;color:var(--pur);letter-spacing:2px}
+.modal-close{background:none;border:1px solid var(--bd);color:var(--dim);font-size:16px;cursor:pointer;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.modal-close:hover{border-color:var(--pink);color:var(--pink)}
+.modal-body{padding:24px;overflow-y:auto;flex:1}
+.modal-body::-webkit-scrollbar{width:4px}.modal-body::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
+.mt-atts{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.mt-att{font-family:'JetBrains Mono',monospace;font-size:13px;padding:6px 14px;border-radius:6px;border:1px solid}
+.mt-msg{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid rgba(46,46,74,.3)}
+.mt-msg:last-child{border-bottom:none}
+.mt-msg-agent{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;min-width:56px;flex-shrink:0;padding-top:2px}
+.mt-msg-text{font-size:15px;line-height:1.8}
+
+.empty{text-align:center;padding:48px 20px;color:var(--dim)}.empty .ei{font-size:40px;margin-bottom:12px;opacity:.4}.empty p{font-size:13px;margin-top:6px}
+.feed-title{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;color:var(--dim);margin-bottom:14px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo"><span class="dot"></span>NOVEL STUDIO</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="overview"><em class="tab-icon">🏠</em>總覽</button>
+    <button class="nav-tab" data-page="agent-editor"><em class="tab-icon">📕</em>H總編</button>
+    <button class="nav-tab" data-page="agent-writer"><em class="tab-icon">✍️</em>H作家</button>
+    <button class="nav-tab" data-page="agent-world"><em class="tab-icon">🌍</em>H世觀</button>
+    <button class="nav-tab" data-page="agent-reader"><em class="tab-icon">📖</em>H讀者</button>
+    <button class="nav-tab" data-page="meetings"><em class="tab-icon">🧠</em>會議室</button>
+    <button class="nav-tab" data-page="logs"><em class="tab-icon">📋</em>日誌</button>
+  </div>
+  <div class="clock" id="clock"></div>
+</div>
+
+<!-- ══════ OVERVIEW ══════ -->
+<div class="page active" id="page-overview">
+  <div class="ov-main">
+    <div class="ov-left">
+      <div class="scene-area">
+        <!-- Office -->
+        <div class="office" id="office">
+          <div class="wall"></div><div class="floor"></div>
+          <div class="shelf" style="top:10%;left:5%;width:14%"></div>
+          <div class="shelf" style="top:18%;left:3%;width:18%"></div>
+          <div class="shelf" style="top:13%;right:8%;width:15%"></div>
+          <div class="book" style="top:7%;left:6%;height:14px;background:#ff6b6b"></div>
+          <div class="book" style="top:7.5%;left:8%;height:12px;background:#4ecdc4"></div>
+          <div class="book" style="top:6.5%;left:10%;height:16px;background:#ffe66d"></div>
+          <div class="book" style="top:7%;left:12%;height:13px;background:#a29bfe"></div>
+          <div class="book" style="top:10%;right:12%;height:13px;background:#00cec9"></div>
+          <div class="book" style="top:10.5%;right:10%;height:11px;background:#fab1a0"></div>
+          <div class="window">
+            <div class="star" style="top:15%;left:20%"></div><div class="star" style="top:35%;left:60%;animation-delay:.5s"></div>
+            <div class="star" style="top:60%;left:30%;animation-delay:1s"></div><div class="star" style="top:25%;left:80%;animation-delay:1.5s"></div>
+            <div class="moon"></div>
+          </div>
+          <div class="crystal" style="top:6%;left:28%;background:var(--cyan);opacity:.6"></div>
+          <div class="crystal" style="top:10%;right:28%;background:var(--grn);opacity:.5;animation-delay:1.5s"></div>
+          <div class="lamp" style="top:22%;left:2%"><div class="lamp-glow"></div><div class="lamp-base"></div></div>
+          <div class="ptc" style="bottom:15%;left:15%;background:var(--cyan)"></div>
+          <div class="ptc" style="bottom:20%;left:50%;background:var(--pur);animation-delay:3s"></div>
+          <div class="ptc" style="bottom:12%;left:80%;background:var(--yel);animation-delay:5s"></div>
+          <!-- Desks (use %) -->
+          <div class="desk" style="bottom:16%;left:4%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-editor"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:26%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-writer"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:48%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-world"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:70%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-reader"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <!-- Characters -->
+          <div class="ch idle" id="ch-editor" data-page="agent-editor" style="bottom:30%;left:8%"
+               data-desk-left="8%" data-desk-bottom="30%">
+            <div class="bubble" style="border-color:var(--pink);color:var(--pink)" id="bub-editor">等待指示...</div>
+            <div class="ch-dot idle" id="dot-editor"></div>
+            <div class="ch-body">
+              <div class="ch-head" style="background:linear-gradient(135deg,#ff4081,#c2185b)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#880e4f,#6a0034)"></div>
+              <div class="ch-arms"><div class="ch-arm" id="arm-editor-l" style="background:#880e4f"></div><div class="ch-arm" id="arm-editor-r" style="background:#880e4f"></div></div>
+            </div>
+            <div class="ch-tag" style="color:var(--pink)">H總編</div>
+          </div>
+          <div class="ch idle" id="ch-writer" data-page="agent-writer" style="bottom:30%;left:30%"
+               data-desk-left="30%" data-desk-bottom="30%">
+            <div class="bubble" style="border-color:var(--cyan);color:var(--cyan)" id="bub-writer">待命中...</div>
+            <div class="ch-dot idle" id="dot-writer"></div>
+            <div class="ch-body">
+              <div class="ch-head" style="background:linear-gradient(135deg,#00e5ff,#0097a7)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#006064,#004d40)"></div>
+              <div class="ch-arms"><div class="ch-arm" id="arm-writer-l" style="background:#006064"></div><div class="ch-arm" id="arm-writer-r" style="background:#006064"></div></div>
+            </div>
+            <div class="ch-tag" style="color:var(--cyan)">H作家</div>
+          </div>
+          <div class="ch idle" id="ch-world" data-page="agent-world" style="bottom:30%;left:52%"
+               data-desk-left="52%" data-desk-bottom="30%">
+            <div class="bubble" style="border-color:var(--yel);color:var(--yel)" id="bub-world">待命中...</div>
+            <div class="ch-dot idle" id="dot-world"></div>
+            <div class="ch-body">
+              <div class="ch-head" style="background:linear-gradient(135deg,#ffd740,#f9a825)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#f57f17,#e65100)"></div>
+              <div class="ch-arms"><div class="ch-arm" id="arm-world-l" style="background:#f57f17"></div><div class="ch-arm" id="arm-world-r" style="background:#f57f17"></div></div>
+            </div>
+            <div class="ch-tag" style="color:var(--yel)">H世觀</div>
+          </div>
+          <div class="ch idle" id="ch-reader" data-page="agent-reader" style="bottom:30%;left:74%"
+               data-desk-left="74%" data-desk-bottom="30%">
+            <div class="bubble" style="border-color:var(--grn);color:var(--grn)" id="bub-reader">待命中...</div>
+            <div class="ch-dot idle" id="dot-reader"></div>
+            <div class="ch-body">
+              <div class="ch-head" style="background:linear-gradient(135deg,#69f0ae,#2e7d32)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#1b5e20,#0d3310)"></div>
+              <div class="ch-arms"><div class="ch-arm" id="arm-reader-l" style="background:#1b5e20"></div><div class="ch-arm" id="arm-reader-r" style="background:#1b5e20"></div></div>
+            </div>
+            <div class="ch-tag" style="color:var(--grn)">H讀者</div>
+          </div>
+          <div class="scene-label">- NOVEL STUDIO OFFICE -</div>
+        </div>
+        <!-- Meeting Room -->
+        <div class="mr" id="mr">
+          <div class="mr-label">MEETING ROOM</div>
+          <div class="mr-wall"></div><div class="mr-floor"></div>
+          <div class="mr-table"><div class="mr-papers"></div></div>
+          <div class="mr-candle"><div class="mr-flame"></div><div class="mr-candle-body"></div></div>
+          <div class="mr-badge off" id="mr-badge">空閒中</div>
+          <div class="mr-avatars" id="mr-avatars"></div>
+          <div class="mr-empty-txt" id="mr-empty">目前無會議</div>
+        </div>
+      </div>
+      <!-- Stats bar -->
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-label">章節</div><div class="stat-val" style="color:var(--cyan)" id="s-ch">0</div><div class="stat-sub" id="s-ch-sub">等待開始</div></div>
+        <div class="stat"><div class="stat-label">任務完成</div><div class="stat-val" style="color:var(--grn)" id="s-task">0</div><div class="stat-sub" id="s-task-sub">0 進行中</div></div>
+        <div class="stat"><div class="stat-label">退件</div><div class="stat-val" style="color:var(--pink)" id="s-rej">0</div><div class="stat-sub">品質把關</div></div>
+        <div class="stat"><div class="stat-label">會議</div><div class="stat-val" style="color:var(--yel)" id="s-meet">0</div><div class="stat-sub">團隊討論</div></div>
+      </div>
+    </div>
+    <!-- Right: Chat panel -->
+    <div class="ov-right">
+      <div class="rp-tabs">
+        <button class="rp-tab active" data-rp="chat"><span class="rp-dot" style="background:var(--pur)"></span>即時動態</button>
+        <button class="rp-tab" data-rp="events"><span class="rp-dot" style="background:var(--grn)"></span>即時事件</button>
+      </div>
+      <div class="rp-pane active" id="rp-chat"></div>
+      <div class="rp-pane" id="rp-events"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail pages -->
+<div class="page" id="page-agent-editor"><div class="detail" id="det-editor"></div></div>
+<div class="page" id="page-agent-writer"><div class="detail" id="det-writer"></div></div>
+<div class="page" id="page-agent-world"><div class="detail" id="det-world"></div></div>
+<div class="page" id="page-agent-reader"><div class="detail" id="det-reader"></div></div>
+<div class="page" id="page-meetings"><div class="mp" id="meetings-ct"></div></div>
+<div class="page" id="page-logs">
+  <div class="lp">
+    <div class="lp-filters">
+      <button class="lf-btn active" data-f="all">ALL</button>
+      <button class="lf-btn" data-f="task">TASK</button>
+      <button class="lf-btn" data-f="message">MESSAGE</button>
+      <button class="lf-btn" data-f="status">STATUS</button>
+      <button class="lf-btn" data-f="meeting">MEETING</button>
+      <button class="lf-btn" data-f="reject">REJECT</button>
+    </div>
+    <div class="feed-list" id="log-feed"></div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-hdr"><h3>會議詳情</h3><button class="modal-close" id="modal-close">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const AG={
+  'H總編':{k:'editor',icon:'📕',c:'#ff4081',role:'CHIEF EDITOR / LEAD',desc:'統籌全局、任務派發、審核成果、關鍵決策。接收人類指示，分解為可執行任務。'},
+  'H作家':{k:'writer',icon:'✍️',c:'#00e5ff',role:'WRITER',desc:'章節撰寫、角色對話、場景描寫、劇情推進。將大綱和設定轉化為引人入勝的文字。'},
+  'H世觀':{k:'world',icon:'🌍',c:'#ffd740',role:'WORLDBUILDER',desc:'世界觀設定、角色背景、設定一致性維護。確保每個細節都有堅實的設定基礎。'},
+  'H讀者':{k:'reader',icon:'📖',c:'#69f0ae',role:'CRITIC / READER',desc:'從讀者視角評估品質、檢查邏輯、提供改進建議。是品質的最後防線。'},
+};
+let allLogs=[],prevLen=0,logFilter='all',meetLogs=[];
+
+// Nav
+document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');document.getElementById('page-'+t.dataset.page).classList.add('active');
+}));
+document.querySelectorAll('.ch[data-page]').forEach(c=>c.addEventListener('click',()=>{
+  const p=c.dataset.page;
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.toggle('active',t.dataset.page===p));
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+}));
+document.getElementById('mr').addEventListener('click',()=>{if(meetLogs.length)openModal(meetLogs)});
+document.getElementById('modal-close').addEventListener('click',()=>document.getElementById('modal').classList.remove('open'));
+document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+
+// Clock
+function uc(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
+setInterval(uc,1000);uc();
+
+// Helpers
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function ft(iso){if(!iso)return'--:--';return new Date(iso).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}
+function ac(n){return AG[n]?.c||'#888'}
+
+// Scene
+function updateScene(logs){
+  const st={},bub={};
+  logs.forEach(l=>{if(l.type==='status'&&AG[l.agent])st[l.agent]=l.content;if(AG[l.agent])bub[l.agent]=l.content});
+  const inMeeting=new Set();
+  Object.entries(AG).forEach(([name,a])=>{
+    const ch=document.getElementById('ch-'+a.k);if(!ch)return;
+    const s=(st[name]||'').toLowerCase();
+    let state='idle';
+    if(s.includes('work')||s.includes('寫')||s.includes('設定')||s.includes('撰寫'))state='working';
+    else if(s.includes('review')||s.includes('審')||s.includes('閱讀'))state='reviewing';
+    else if(s.includes('meet')||s.includes('開會'))state='meeting';
+    if(state==='meeting'){inMeeting.add(name);ch.style.left='-200px';ch.style.bottom='-200px'}
+    else{ch.style.left=ch.dataset.deskLeft;ch.style.bottom=ch.dataset.deskBottom}
+    ch.className='ch '+state+(state!=='idle'?' speaking':'');
+    document.getElementById('dot-'+a.k).className='ch-dot '+(state==='reviewing'?'reviewing':state);
+    const mon=document.getElementById('mon-'+a.k);if(mon)mon.className='mon-scr'+(state==='working'?' typing':'');
+    const al=document.getElementById('arm-'+a.k+'-l'),ar=document.getElementById('arm-'+a.k+'-r');
+    if(al)al.className='ch-arm'+(state==='working'?' typing':'');
+    if(ar)ar.className='ch-arm'+(state==='working'?' typing':'');
+    const b=document.getElementById('bub-'+a.k);
+    if(bub[name]){const t=bub[name];b.textContent=t.length>20?t.substring(0,20)+'...':t}
+  });
+  // Meeting room
+  const badge=document.getElementById('mr-badge'),avs=document.getElementById('mr-avatars'),emp=document.getElementById('mr-empty');
+  meetLogs=logs.filter(l=>l.type==='meeting');
+  if(inMeeting.size>0){
+    emp.style.display='none';badge.className='mr-badge on';badge.textContent='會議中 ('+inMeeting.size+'人)';
+    avs.innerHTML=[...inMeeting].map(n=>{const a=AG[n];return`<div class="mr-av"><div class="mr-av-icon" style="background:${a.c}22;border:1px solid ${a.c}">${a.icon}</div><div class="mr-av-name" style="color:${a.c}">${n}</div></div>`}).join('');
+  } else {
+    emp.style.display='';badge.className='mr-badge off';badge.textContent='空閒中';avs.innerHTML='';
+  }
+}
+
+// Right panel tabs
+document.querySelectorAll('.rp-tab').forEach(t=>t.addEventListener('click',()=>{
+  document.querySelectorAll('.rp-tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.rp-pane').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById('rp-'+t.dataset.rp).classList.add('active');
+}));
+
+// Chat panel (即時動態 = message, meeting, reject)
+let prevChatLen=0;
+function updateChat(logs){
+  const el=document.getElementById('rp-chat');
+  const msgs=logs.filter(l=>l.type==='message'||l.type==='meeting'||l.type==='reject');
+  if(!msgs.length){el.innerHTML='<div class="empty"><div class="ei">💬</div>等待對話...<p>Agent 之間的對話、會議、退件會顯示在這裡</p></div>';return}
+  const recent=msgs.slice(-30);
+  const newCount=msgs.length-prevChatLen;
+  el.innerHTML=recent.map((l,i)=>{
+    const isNew=i>=recent.length-newCount&&prevChatLen>0;
+    return`<div class="cm${isNew?' new-msg':''}">
+      <div class="cm-head">
+        <span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
+        ${l.to?`<span class="cm-arrow">→</span><span class="cm-agent" style="color:${ac(l.to)}">${l.to}</span>`:''}
+        <span class="cm-type ${l.type}">${(l.type||'').toUpperCase()}</span>
+        <span class="cm-time">${ft(l.timestamp)}</span>
+      </div>
+      <div class="cm-text">${esc(l.content||'')}</div>
+    </div>`;
+  }).join('');
+  if(newCount>0)el.scrollTop=el.scrollHeight;
+  prevChatLen=msgs.length;
+}
+
+// Events panel (即時事件 = task, status)
+let prevEvtLen=0;
+function updateEvents(logs){
+  const el=document.getElementById('rp-events');
+  const evts=logs.filter(l=>l.type==='task'||l.type==='status');
+  if(!evts.length){el.innerHTML='<div class="empty"><div class="ei">📋</div>等待事件...<p>任務分派、狀態變更會顯示在這裡</p></div>';return}
+  const recent=evts.slice(-30);
+  const newCount=evts.length-prevEvtLen;
+  el.innerHTML=recent.map((l,i)=>{
+    const isNew=i>=recent.length-newCount&&prevEvtLen>0;
+    const icon=l.type==='task'?(l.content?.startsWith('完成')?'✅':'🔄'):'📡';
+    return`<div class="cm${isNew?' new-msg':''}">
+      <div class="cm-head">
+        <span style="margin-right:4px">${icon}</span>
+        <span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
+        <span class="cm-type ${l.type}">${(l.type||'').toUpperCase()}</span>
+        <span class="cm-time">${ft(l.timestamp)}</span>
+      </div>
+      <div class="cm-text">${esc(l.content||'')}</div>
+    </div>`;
+  }).join('');
+  if(newCount>0)el.scrollTop=el.scrollHeight;
+  prevEvtLen=evts.length;
+}
+
+// Stats
+function updateStats(logs){
+  const tasks=logs.filter(l=>l.type==='task');
+  const done=tasks.filter(l=>/^完成/.test(l.content)).length;
+  const inP=tasks.length-done;
+  document.getElementById('s-ch').textContent=logs.filter(l=>l.type==='task'&&/完成.*章/.test(l.content)).length;
+  document.getElementById('s-ch-sub').textContent=done?`已完成`:'等待開始';
+  document.getElementById('s-task').textContent=done;
+  document.getElementById('s-task-sub').textContent=inP+' 進行中';
+  document.getElementById('s-rej').textContent=logs.filter(l=>l.type==='reject').length;
+  document.getElementById('s-meet').textContent=logs.filter(l=>l.type==='meeting').length;
+}
+
+// Agent detail
+function renderDetail(name,logs){
+  const a=AG[name];if(!a)return;const el=document.getElementById('det-'+a.k);
+  const al=logs.filter(l=>l.agent===name||l.to===name);
+  const tl=al.filter(l=>l.type==='task'),ml=al.filter(l=>l.type==='message');
+  const rl=logs.filter(l=>l.type==='reject'&&(l.agent===name||l.to===name));
+  const sl=al.filter(l=>l.type==='status');const ls=sl.length?sl[sl.length-1].content:'idle';
+  el.innerHTML=`<div class="hero"><div class="hero-av" style="border-color:${a.c}">${a.icon}<div class="hero-st" style="background:${a.c}22;color:${a.c};border:1px solid ${a.c}44">${esc(ls).toUpperCase()}</div></div>
+    <div class="hero-info"><h2 style="color:${a.c}">${name}</h2><div class="hero-role" style="color:${a.c}99">${a.role}</div><div class="hero-desc">${a.desc}</div>
+    <div class="hero-nums"><div class="hn"><div class="hn-v" style="color:var(--cyan)">${tl.length}</div><div class="hn-l">任務</div></div>
+    <div class="hn"><div class="hn-v" style="color:var(--pur)">${ml.length}</div><div class="hn-l">訊息</div></div>
+    <div class="hn"><div class="hn-v" style="color:var(--pink)">${rl.length}</div><div class="hn-l">退件</div></div></div></div></div>
+    <div class="sec"><div class="sec-h">活動時間軸</div><div class="sec-b">${al.length?al.slice(-30).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to&&l.to!==name?`<span class="fi-arrow">→ <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}</div>`).join(''):'<div class="empty"><div class="ei">⏳</div>尚無活動</div>'}</div></div>
+    <div class="sec"><div class="sec-h">對話記錄</div><div class="sec-b">${ml.length?ml.slice(-20).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent}</span><span class="fi-arrow">→</span><span class="fi-agent" style="color:${ac(l.to)}">${l.to||'ALL'}</span><span class="fi-content">${esc(l.content||'')}</span></div>`).join(''):'<div class="empty"><div class="ei">💬</div>尚無對話</div>'}</div></div>`;
+}
+
+// Meetings page
+function renderMeetings(logs){
+  const el=document.getElementById('meetings-ct');const ms=logs.filter(l=>l.type==='meeting');
+  if(!ms.length){el.innerHTML='<div class="empty" style="margin-top:80px"><div class="ei">🧠</div><p style="font-size:15px">尚無會議記錄</p><p>退件達 2 次或重大決策時觸發</p></div>';return}
+  el.innerHTML='<div class="feed-title" style="margin-top:24px">會議記錄</div>'+ms.slice(-10).reverse().map(m=>`<div class="m-card"><div class="m-card-h"><span class="fi-type meeting" style="font-size:12px">MEETING</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim)">${ft(m.timestamp)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${ac(m.agent)}">${m.agent}</span></div><div class="m-body">${esc(m.content||'')}</div></div>`).join('');
+}
+
+// Log page
+function renderLogs(logs){
+  const el=document.getElementById('log-feed');const f=logFilter==='all'?logs:logs.filter(l=>l.type===logFilter);
+  if(!f.length){el.innerHTML='<div class="empty"><div class="ei">📋</div>無符合日誌</div>';return}
+  el.innerHTML=f.slice(-60).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to?`<span class="fi-arrow">→ <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}</div>`).join('');
+}
+document.querySelectorAll('.lf-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lf-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');logFilter=b.dataset.f;renderLogs(allLogs)}));
+
+// Modal
+function openModal(ml){
+  const body=document.getElementById('modal-body');
+  const agents=new Set();ml.forEach(l=>{if(l.agent)agents.add(l.agent)});
+  body.innerHTML=`<div class="mt-atts">${[...agents].map(n=>`<div class="mt-att" style="color:${ac(n)};border-color:${ac(n)}44">${AG[n]?.icon||''} ${n}</div>`).join('')}</div>${ml.slice(-20).map(l=>`<div class="mt-msg"><div style="display:flex;align-items:center;gap:10px;min-width:100px"><span class="mt-msg-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim)">${ft(l.timestamp)}</span></div><div class="mt-msg-text">${esc(l.content||'')}</div></div>`).join('')}`;
+  document.getElementById('modal').classList.add('open');
+}
+
+// Fetch
+async function fetchAll(){
+  try{const r=await fetch('../logs/activity.jsonl?t='+Date.now());if(!r.ok)return;const t=await r.text();
+  prevLen=allLogs.length;allLogs=t.trim().split('\n').filter(Boolean).map(l=>{try{return JSON.parse(l)}catch{return null}}).filter(Boolean)}catch{}
+  updateScene(allLogs);updateChat(allLogs);updateEvents(allLogs);updateStats(allLogs);
+  Object.keys(AG).forEach(n=>renderDetail(n,allLogs));renderMeetings(allLogs);renderLogs(allLogs);
+}
+fetchAll();setInterval(fetchAll,3000);
+</script>
+</body>
+</html>
