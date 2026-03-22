@@ -9,15 +9,18 @@
 :root{
   --bg:#08080e;--sf:#0f0f1a;--sf2:#161626;--sf3:#1e1e32;--bd:#2e2e4a;
   --tx:#eaeaf2;--dim:#8888a8;
-  --pink:#ff4081;--cyan:#00e5ff;--yel:#ffd740;--grn:#69f0ae;--pur:#b388ff;
+  --pink:#ff4081;--cyan:#00e5ff;--yel:#ffd740;--grn:#69f0ae;--pur:#b388ff;--org:#ffab40;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;min-height:100vh}
 
 /* ─── NAV ─── */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,14,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 28px;height:56px}
-.logo{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--pink);letter-spacing:2px;margin-right:36px;white-space:nowrap}
+.logo{font-family:'Press Start 2P',monospace;font-size:13px;color:var(--pink);letter-spacing:2px;margin-right:24px;white-space:nowrap}
 .logo .dot{display:inline-block;width:8px;height:8px;background:var(--grn);border-radius:50%;margin-right:10px;animation:blink 2s infinite}
+.novel-sel{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--sf2);border:1px solid var(--bd);color:var(--cyan);padding:6px 12px;border-radius:6px;margin-right:20px;cursor:pointer;outline:none;max-width:220px}
+.novel-sel:hover{border-color:var(--cyan)}
+.novel-sel option{background:var(--sf);color:var(--tx)}
 .nav-tabs{display:flex;gap:4px;flex:1}
 .nav-tab{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1px;padding:10px 18px;border:none;background:0;color:var(--dim);cursor:pointer;border-radius:6px 6px 0 0;transition:.2s;position:relative}
 .nav-tab:hover{color:var(--tx);background:var(--sf2)}
@@ -29,11 +32,23 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 /* ─── PAGES ─── */
 .page{display:none;padding-top:56px;min-height:100vh}.page.active{display:block}
 
+/* ─── PIPELINE PROGRESS ─── */
+.pipeline{background:var(--sf);border-bottom:1px solid var(--bd);padding:0;display:flex;align-items:stretch;height:36px}
+.pipe-step{flex:1;position:relative;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);white-space:nowrap;transition:.3s;border-right:1px solid var(--bd);cursor:default;letter-spacing:.5px}
+.pipe-step:last-child{border-right:none}
+.pipe-step.done{background:rgba(105,240,174,.08);color:var(--grn)}
+.pipe-step.done::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--grn)}
+.pipe-step.active{background:rgba(0,229,255,.1);color:var(--cyan);font-weight:600}
+.pipe-step.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--cyan);animation:activePipe 1.5s ease-in-out infinite}
+.pipe-step.active .pipe-dot{display:block}
+.pipe-dot{display:none;width:6px;height:6px;border-radius:50%;background:var(--cyan);margin-right:6px;box-shadow:0 0 8px var(--cyan);animation:blink 1.2s infinite}
+.pipe-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--dim);padding:0 12px;display:flex;align-items:center;background:var(--sf2);border-right:1px solid var(--bd);white-space:nowrap;flex-shrink:0;text-transform:uppercase}
+@keyframes activePipe{0%,100%{opacity:1}50%{opacity:.4}}
+
 /* ─── OVERVIEW LAYOUT ─── */
-.ov-main{display:flex;height:calc(100vh - 56px);overflow:hidden}
+.ov-main{display:flex;height:calc(100vh - 56px - 42px);overflow:hidden}
 .ov-left{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .ov-right{width:380px;border-left:1px solid var(--bd);display:flex;flex-direction:column;background:var(--sf)}
-/* events strip below scene */
 .events-strip{border-top:1px solid var(--bd);flex-shrink:0;height:260px;overflow-y:auto;background:var(--sf)}
 .events-strip::-webkit-scrollbar{width:4px}.events-strip::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 .events-strip-header{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--dim);padding:12px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
@@ -44,28 +59,18 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .office{position:relative;flex:1;background:var(--sf);overflow:hidden}
 .mr{position:relative;width:220px;background:var(--sf);border-left:2px solid var(--bd);overflow:hidden;cursor:pointer;transition:background .2s}
 .mr:hover{background:var(--sf2)}
-
-/* office internals */
 .wall{position:absolute;top:0;left:0;right:0;height:55%;background:linear-gradient(to bottom,#12101e,#18162e)}
 .floor{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(to bottom,#1a1828,#14121f);border-top:2px solid #2e2850}
 .floor::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 119px,rgba(46,40,80,.15) 119px,rgba(46,40,80,.15) 120px)}
-
-/* shelves */
 .shelf{position:absolute;background:#2e2850;height:8px;border-radius:2px}
 .book{position:absolute;width:9px;border-radius:1px}
-
-/* window */
 .window{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:140px;height:100px;border:3px solid #3e3870;border-radius:6px;background:linear-gradient(to bottom,#1a1840,#0e0c28);overflow:hidden}
 .star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:twinkle 3s infinite}
 .moon{position:absolute;top:14px;right:18px;width:22px;height:22px;background:radial-gradient(circle at 60% 40%,#fffde7,#ffd54f);border-radius:50%;box-shadow:0 0 14px rgba(255,213,79,.4)}
-
-/* crystals */
 .crystal{position:absolute;width:10px;height:16px;clip-path:polygon(50% 0%,100% 40%,80% 100%,20% 100%,0% 40%);animation:float 4s ease-in-out infinite;z-index:5}
-/* lamp */
 .lamp{position:absolute;z-index:5}
 .lamp-glow{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,50,.5),transparent);margin:0 auto;animation:lampGlow 3s ease-in-out infinite}
 .lamp-base{width:5px;height:30px;background:#3a3560;margin:0 auto}
-/* particles */
 .ptc{position:absolute;width:2px;height:2px;border-radius:50%;opacity:.3;pointer-events:none;animation:ptcUp 8s linear infinite;z-index:4}
 @keyframes ptcUp{0%{transform:translateY(0);opacity:0}20%{opacity:.4}80%{opacity:.1}100%{transform:translateY(-200px);opacity:0}}
 
@@ -79,13 +84,13 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .mon-scr.typing{animation:scFlk .7s infinite}
 @keyframes scFlk{0%,100%{background:#0a1628}50%{background:#12244a}}
 
-/* ─── CHARACTERS (bigger) ─── */
+/* ─── CHARACTERS ─── */
 .ch{position:absolute;z-index:20;cursor:pointer;transition:left .8s ease,bottom .8s ease,transform .15s}
 .ch:hover{transform:scale(1.15)}
 .ch-body{position:relative;width:56px;height:70px;display:flex;flex-direction:column;align-items:center}
 .ch-head{width:28px;height:28px;border-radius:7px;position:relative;z-index:2}
 .ch-eyes{position:absolute;top:11px;left:5px;right:5px;display:flex;justify-content:space-between}
-.ch-eye{width:4px;height:4px;background:#111;border-radius:50%}
+.ch-eye{width:4px;height:4px;background:#111;border-radius:50%;transition:.3s}
 .ch-torso{width:32px;height:22px;border-radius:5px 5px 3px 3px;margin-top:-4px;z-index:1}
 .ch-arms{position:absolute;top:26px;width:44px;display:flex;justify-content:space-between}
 .ch-arm{width:6px;height:14px;border-radius:3px}
@@ -95,16 +100,83 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .ch-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;border:2px solid var(--bg);z-index:30}
 .ch-dot.idle{background:var(--dim)}.ch-dot.working{background:var(--grn);animation:blink 1.5s infinite}
 .ch-dot.reviewing{background:var(--yel)}.ch-dot.meeting{background:var(--pur);animation:blink 1s infinite}
-/* bubble */
-.bubble{position:absolute;top:-48px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.88);border:1px solid;border-radius:8px;padding:5px 12px;font-size:12px;white-space:nowrap;max-width:220px;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
-.bubble::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(0,0,0,.88)}
-.ch:hover .bubble,.ch.speaking .bubble{opacity:1}
+
+/* ─── CHARACTER ACCESSORIES ─── */
+/* H總編: square glasses + tie */
+.acc-glasses{position:absolute;top:9px;left:2px;width:24px;height:8px;z-index:3}
+.acc-glasses::before,.acc-glasses::after{content:'';position:absolute;top:0;width:9px;height:7px;border:1.5px solid rgba(255,255,255,.7);border-radius:1px}
+.acc-glasses::before{left:0}.acc-glasses::after{right:0}
+.acc-glasses-bridge{position:absolute;top:2px;left:50%;transform:translateX(-50%);width:4px;height:1.5px;background:rgba(255,255,255,.5)}
+.acc-tie{position:absolute;top:0;left:50%;transform:translateX(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:8px solid #c2185b;z-index:2}
+.acc-mug{position:absolute;top:-8px;right:8px;width:8px;height:7px;background:#8d6e63;border-radius:0 0 2px 2px;z-index:3}
+.acc-mug::after{content:'';position:absolute;top:1px;right:-3px;width:3px;height:4px;border:1px solid #8d6e63;border-left:none;border-radius:0 3px 3px 0}
+.acc-mug-steam{position:absolute;top:-12px;right:10px;width:4px;height:6px;z-index:3}
+.acc-mug-steam::before,.acc-mug-steam::after{content:'';position:absolute;width:1px;background:rgba(255,255,255,.3);border-radius:1px;animation:steam 2s infinite}
+.acc-mug-steam::before{left:0;height:5px}.acc-mug-steam::after{left:3px;height:4px;animation-delay:.5s}
+@keyframes steam{0%{opacity:0;transform:translateY(0)}50%{opacity:.5}100%{opacity:0;transform:translateY(-6px)}}
+
+/* H作家: pen behind ear + messy hair */
+.acc-pen{position:absolute;top:-2px;right:-4px;width:2px;height:16px;background:linear-gradient(to bottom,#00e5ff,#0097a7);border-radius:1px;transform:rotate(25deg);z-index:4}
+.acc-pen::after{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:1.5px solid transparent;border-right:1.5px solid transparent;border-top:3px solid #333}
+.acc-hair{position:absolute;top:-4px;left:2px;z-index:4}
+.acc-hair::before,.acc-hair::after{content:'';position:absolute;background:#00bcd4;border-radius:1px}
+.acc-hair::before{width:2px;height:6px;transform:rotate(-15deg)}
+.acc-hair::after{left:6px;width:2px;height:5px;transform:rotate(20deg)}
+.acc-ink{position:absolute;top:-10px;right:16px;width:6px;height:7px;background:#006064;border-radius:1px 1px 2px 2px;z-index:3;border:1px solid #00838f}
+.acc-ink::after{content:'';position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:3px;height:2px;background:#004d40;border-radius:1px 1px 0 0}
+
+/* H世觀: round glasses + book stack */
+.acc-rglasses{position:absolute;top:9px;left:2px;width:24px;height:8px;z-index:3}
+.acc-rglasses::before,.acc-rglasses::after{content:'';position:absolute;top:0;width:9px;height:8px;border:1.5px solid rgba(255,215,64,.6);border-radius:50%}
+.acc-rglasses::before{left:0}.acc-rglasses::after{right:0}
+.acc-rglasses-bridge{position:absolute;top:3px;left:50%;transform:translateX(-50%);width:4px;height:1.5px;background:rgba(255,215,64,.4)}
+.acc-books{position:absolute;top:-14px;left:8px;z-index:3}
+.acc-book1{width:14px;height:3px;background:#e65100;border-radius:.5px;margin-bottom:1px}
+.acc-book2{width:12px;height:3px;background:#f9a825;border-radius:.5px;margin-bottom:1px}
+.acc-book3{width:15px;height:3px;background:#ff6f00;border-radius:.5px}
+.acc-mag{position:absolute;top:30px;right:-6px;z-index:4;opacity:.7}
+.acc-mag::before{content:'';display:block;width:8px;height:8px;border:1.5px solid var(--yel);border-radius:50%}
+.acc-mag::after{content:'';position:absolute;bottom:-4px;right:-1px;width:1.5px;height:5px;background:var(--yel);transform:rotate(-45deg)}
+
+/* H讀者: half-moon glasses + notepad */
+.acc-hglasses{position:absolute;top:11px;left:2px;width:24px;height:6px;z-index:3}
+.acc-hglasses::before,.acc-hglasses::after{content:'';position:absolute;top:0;width:9px;height:5px;border:1.5px solid rgba(105,240,174,.6);border-top:none;border-radius:0 0 5px 5px}
+.acc-hglasses::before{left:0}.acc-hglasses::after{right:0}
+.acc-notepad{position:absolute;top:-12px;left:12px;width:10px;height:12px;background:#c8e6c9;border-radius:1px;z-index:3;border:1px solid #81c784}
+.acc-notepad::before{content:'';position:absolute;top:2px;left:2px;right:2px;height:1px;background:#66bb6a;box-shadow:0 3px 0 #66bb6a,0 6px 0 #66bb6a}
+
+/* ─── EMOTION SYSTEM ─── */
+.ch.frustrated .ch-body{animation:frustrated .4s ease 3}
+@keyframes frustrated{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px) rotate(-2deg)}75%{transform:translateX(3px) rotate(2deg)}}
+.ch.frustrated .ch-eye{height:2px;border-radius:2px}
+.ch.excited .ch-body{animation:excited .5s ease 3}
+@keyframes excited{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.ch.excited .ch-eye{height:3px;width:5px;border-radius:0 0 3px 3px;background:#111}
+.ch.celebrating .ch-body{animation:celebrate .6s ease infinite}
+@keyframes celebrate{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-6px) rotate(-3deg)}50%{transform:translateY(-10px)}75%{transform:translateY(-6px) rotate(3deg)}}
+.ch.alert .ch-body{animation:alertBounce .3s ease 2}
+@keyframes alertBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .ch.idle .ch-body{animation:breathe 3s ease-in-out infinite}
 .ch.working .ch-body{animation:workB 1.5s ease-in-out infinite}
 .ch.meeting .ch-body{animation:meetG 2s ease-in-out infinite}
 @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 @keyframes workB{0%,100%{transform:translateY(0)}25%{transform:translateY(-4px) rotate(-1deg)}75%{transform:translateY(-1px) rotate(1deg)}}
 @keyframes meetG{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3) drop-shadow(0 0 8px var(--pur))}}
+
+/* Emote icon */
+.emote-icon{display:none;position:absolute;top:-28px;left:50%;transform:translateX(-50%);font-size:16px;z-index:50;animation:emoteFloat 2s ease forwards;pointer-events:none}
+@keyframes emoteFloat{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(-20px)}}
+
+/* Confetti */
+.confetti-container{position:absolute;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti{position:absolute;width:6px;height:6px;border-radius:1px;animation:confettiFall 2s ease-out forwards;pointer-events:none}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(0) rotate(0) scale(1)}50%{opacity:1}100%{opacity:0;transform:translateY(200px) rotate(720deg) scale(.3)}}
+
+/* bubble */
+.bubble{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,.88);border:1px solid;border-radius:8px;padding:5px 12px;font-size:12px;white-space:normal;word-break:break-word;max-width:240px;width:max-content;opacity:0;transition:opacity .3s;pointer-events:none;z-index:50;line-height:1.5}
+.bubble::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(0,0,0,.88)}
+.ch:hover .bubble,.ch.speaking .bubble{opacity:1}
+
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 @keyframes twinkle{0%,100%{opacity:1}50%{opacity:.15}}
@@ -130,6 +202,15 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .mr-av-name{font-family:'Press Start 2P',monospace;font-size:6px;margin-top:4px}
 .mr-empty-txt{position:absolute;bottom:28%;left:0;right:0;text-align:center;font-size:13px;color:var(--dim);z-index:10}
 
+/* Reject tracker overlay */
+.reject-tracker{position:absolute;top:8px;right:8px;z-index:40;display:flex;flex-direction:column;gap:4px}
+.rt-item{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border-radius:4px;background:rgba(255,64,129,.08);border:1px solid rgba(255,64,129,.2);color:var(--pink);display:none;align-items:center;gap:4px}
+.rt-item.show{display:flex}
+.rt-item.warn{background:rgba(255,64,129,.15);border-color:rgba(255,64,129,.4);animation:blink 1.5s infinite}
+.rt-dots{display:flex;gap:2px}
+.rt-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);opacity:.3}
+.rt-dot.filled{opacity:1}
+
 /* ─── RIGHT PANEL ─── */
 .chat-header{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;padding:12px 16px;border-bottom:1px solid var(--bd);color:var(--dim);flex-shrink:0;display:flex;align-items:center;gap:8px}
 .chat-header .ch-dot-sm{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:blink 2s infinite}
@@ -147,11 +228,12 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .cm-type.reject{background:rgba(255,64,129,.1);color:var(--pink)}
 .cm-type.task{background:rgba(0,229,255,.1);color:var(--cyan)}
 .cm-type.status{background:rgba(105,240,174,.1);color:var(--grn)}
+.cm-type.decision{background:rgba(255,171,64,.12);color:var(--org)}
 .cm-text{font-size:14px;line-height:1.7;color:var(--tx);padding-left:2px}
 .cm.new-msg{animation:newMsg .6s ease-out}
 @keyframes newMsg{0%{background:rgba(0,229,255,.06)}100%{background:transparent}}
 
-/* ─── STATS (compact, in right panel) ─── */
+/* ─── STATS ─── */
 .stats-compact{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd);flex-shrink:0}
 .stat-c{padding:10px 14px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
 .stat-c:nth-child(2n){border-right:none}
@@ -169,6 +251,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .hero-info h2{font-family:'Press Start 2P',monospace;font-size:18px;letter-spacing:2px}
 .hero-role{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;margin-top:4px}
 .hero-desc{font-size:15px;color:var(--dim);margin-top:12px;line-height:1.8}
+.hero-personality{font-size:13px;margin-top:8px;padding:8px 12px;background:var(--sf2);border-radius:6px;border-left:3px solid}
 .hero-nums{display:flex;gap:28px;margin-top:18px}
 .hn{text-align:center}.hn-v{font-family:'Press Start 2P',monospace;font-size:18px}.hn-l{font-size:12px;color:var(--dim);margin-top:4px}
 .sec{background:var(--sf);border:1px solid var(--bd);border-radius:8px;margin-bottom:16px;overflow:hidden}
@@ -176,7 +259,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .sec-b{padding:8px 12px;max-height:400px;overflow-y:auto}
 .sec-b::-webkit-scrollbar{width:4px}.sec-b::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px}
 
-/* ─── FEED ITEMS (shared) ─── */
+/* ─── FEED ITEMS ─── */
 .fi{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(46,46,74,.3);font-size:14px;transition:background .15s}
 .fi:hover{background:var(--sf2)}.fi:last-child{border-bottom:none}
 .fi-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);min-width:48px}
@@ -189,10 +272,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .fi-type.reject{background:rgba(255,64,129,.1);color:var(--pink)}
 .fi-type.decision{background:rgba(255,171,64,.12);color:#ffab40;font-weight:600}
 .fi-content{flex:1;line-height:1.6}.fi-arrow{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim)}
+.fi-novel{font-family:'JetBrains Mono',monospace;font-size:9px;padding:1px 6px;border-radius:3px;background:rgba(179,136,255,.08);color:var(--pur);margin-left:4px}
 
 /* ─── LOG PAGE ─── */
 .lp{max-width:1000px;margin:32px auto;padding:0 32px}
-.lp-filters{display:flex;gap:8px;margin-bottom:20px}
+.lp-filters{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .lf-btn{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--bd);border-radius:6px;background:0;color:var(--dim);cursor:pointer;transition:.2s;text-transform:uppercase}
 .lf-btn:hover,.lf-btn.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.05)}
 .feed-list{background:var(--sf);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
@@ -246,69 +330,58 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 .work-body ul,.work-body ol{padding-left:28px;margin-bottom:18px}
 .work-body li{margin-bottom:6px}
 .work-body strong{color:#eaeaf2}
-@media(max-width:768px){
-  .work-page{flex-direction:column}
-  .work-sidebar{width:100%;height:auto;max-height:200px;border-right:none;border-bottom:1px solid var(--bd)}
-  .work-content{padding:20px 16px}
-}
 
 .empty{text-align:center;padding:48px 20px;color:var(--dim)}.empty .ei{font-size:40px;margin-bottom:12px;opacity:.4}.empty p{font-size:13px;margin-top:6px}
 .feed-title{font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:3px;color:var(--dim);margin-bottom:14px;text-transform:uppercase}
 
+/* ─── REPORT PAGE ─── */
+.rp-page{max-width:800px;margin:32px auto;padding:0 32px}
+.rp-header{margin-bottom:28px}
+.rp-title{font-family:'Press Start 2P',monospace;font-size:16px;color:var(--pink);letter-spacing:2px}
+.rp-subtitle{font-size:13px;color:var(--dim);margin-top:8px}
+.rp-card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:0;margin-bottom:20px;overflow:hidden}
+.rp-card-hdr{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--bd);background:var(--sf2)}
+.rp-card-hdr .rp-badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;letter-spacing:1px}
+.rp-card-hdr .rp-badge.report{background:rgba(255,64,129,.1);color:var(--pink);border:1px solid rgba(255,64,129,.2)}
+.rp-card-hdr .rp-badge.auto{background:rgba(0,229,255,.1);color:var(--cyan);border:1px solid rgba(0,229,255,.2)}
+.rp-card-time{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--dim);margin-left:auto}
+.rp-card-body{padding:20px 24px}
+.rp-card-body .rp-summary{font-size:16px;font-weight:700;margin-bottom:16px;line-height:1.6}
+.rp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.rp-metric{background:var(--sf2);padding:10px 14px;border-radius:6px}
+.rp-metric-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.rp-metric-val{font-family:'Press Start 2P',monospace;font-size:14px;margin-top:4px}
+.rp-section{margin-bottom:12px}
+.rp-section-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;margin-bottom:6px}
+.rp-section-body{font-size:14px;line-height:1.8;color:var(--tx);padding-left:2px}
+.rp-action{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(255,171,64,.06);border:1px solid rgba(255,171,64,.15);border-radius:6px;margin-top:8px;font-size:13px;color:var(--org)}
+.rp-action-icon{font-size:14px}
+
 /* ─── RWD ─── */
-/* Tablet */
 @media(max-width:1024px){
   .ov-main{flex-direction:column;height:auto;overflow:auto}
-  .ov-left{flex:none}
-  .ov-right{width:100%;border-left:none;border-top:1px solid var(--bd);max-height:400px}
-  .scene-area{flex-direction:column}
-  .office{min-height:360px}
-  .mr{width:100%;height:180px;border-left:none;border-top:2px solid var(--bd)}
-  .mr-avatars{bottom:30%}
-  .events-strip{height:200px}
-  .stats-compact{grid-template-columns:repeat(4,1fr)}
-  .stat-c{border-bottom:none}
-  .nav-tabs{overflow-x:auto;flex-wrap:nowrap}
-  .nav-tab{font-size:11px;padding:8px 10px;white-space:nowrap}
-  .detail{padding:0 20px}
-  .lp{padding:0 20px}
-  .mp{padding:0 20px}
+  .ov-left{flex:none}.ov-right{width:100%;border-left:none;border-top:1px solid var(--bd);max-height:400px}
+  .scene-area{flex-direction:column}.office{min-height:360px}
+  .mr{width:100%;height:180px;border-left:none;border-top:2px solid var(--bd)}.mr-avatars{bottom:30%}
+  .events-strip{height:200px}.stats-compact{grid-template-columns:repeat(4,1fr)}.stat-c{border-bottom:none}
+  .nav-tabs{overflow-x:auto;flex-wrap:nowrap}.nav-tab{font-size:11px;padding:8px 10px;white-space:nowrap}
+  .detail,.lp,.mp{padding:0 20px}
+  .work-page{flex-direction:column}.work-sidebar{width:100%;height:auto;max-height:200px;border-right:none;border-bottom:1px solid var(--bd)}.work-content{padding:20px 16px}
 }
-/* Mobile */
 @media(max-width:640px){
-  .topbar{padding:0 12px;height:48px}
-  .logo{font-size:10px;margin-right:12px}
-  .nav-tabs{gap:0}
-  .nav-tab{font-size:10px;padding:6px 8px}
-  .tab-icon{display:none}
-  .clock{display:none}
+  .topbar{padding:0 12px;height:48px}.logo{font-size:10px;margin-right:8px}.novel-sel{font-size:10px;padding:4px 8px;margin-right:8px;max-width:100px}
+  .nav-tabs{gap:0}.nav-tab{font-size:10px;padding:6px 8px}.tab-icon{display:none}.clock{display:none}
   .page{padding-top:48px}
-  .scene-area{flex-direction:column}
-  .office{min-height:280px}
-  .mr{height:140px}
-  .ch-body{width:36px;height:48px}
-  .ch-head{width:18px;height:18px;border-radius:4px}
-  .ch-eye{width:3px;height:3px}
-  .ch-torso{width:22px;height:16px}
-  .ch-arms{width:32px;top:20px}
-  .ch-arm{width:4px;height:10px}
-  .ch-tag{font-size:5px;padding:2px 4px}
-  .bubble{font-size:8px;padding:3px 6px;top:-36px}
-  .events-strip{height:160px}
-  .stats-compact{grid-template-columns:1fr 1fr}
-  .ov-right{max-height:320px}
-  .cm{padding:8px 14px}
-  .cm-agent{font-size:11px}
-  .cm-text{font-size:12px}
-  .fi{padding:6px 12px;font-size:12px;gap:8px}
-  .fi-time{font-size:10px;min-width:36px}
-  .fi-agent{font-size:10px;min-width:40px}
-  .hero{flex-direction:column;gap:16px}
-  .hero-av{width:80px;height:100px;font-size:40px}
-  .hero-info h2{font-size:14px}
-  .detail{padding:0 14px;margin:16px auto}
-  .lp{padding:0 14px;margin:16px auto}
-  .mp{padding:0 14px;margin:16px auto}
+  .pipeline{padding:6px 12px}.pipe-node{font-size:9px;padding:3px 8px}.pipe-arrow{font-size:10px;margin:0 2px}
+  .scene-area{flex-direction:column}.office{min-height:280px}.mr{height:140px}
+  .ch-body{width:36px;height:48px}.ch-head{width:18px;height:18px;border-radius:4px}.ch-eye{width:3px;height:3px}
+  .ch-torso{width:22px;height:16px}.ch-arms{width:32px;top:20px}.ch-arm{width:4px;height:10px}
+  .ch-tag{font-size:5px;padding:2px 4px}.bubble{font-size:8px;padding:3px 6px;top:-36px}
+  .events-strip{height:160px}.stats-compact{grid-template-columns:1fr 1fr}.ov-right{max-height:320px}
+  .cm{padding:8px 14px}.cm-agent{font-size:11px}.cm-text{font-size:12px}
+  .fi{padding:6px 12px;font-size:12px;gap:8px}.fi-time{font-size:10px;min-width:36px}.fi-agent{font-size:10px;min-width:40px}
+  .hero{flex-direction:column;gap:16px}.hero-av{width:80px;height:100px;font-size:40px}.hero-info h2{font-size:14px}
+  .detail,.lp,.mp{padding:0 14px;margin:16px auto}
   .modal{width:95vw;max-height:85vh}
 }
 </style>
@@ -317,21 +390,23 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
 
 <div class="topbar">
   <div class="logo"><span class="dot"></span>NOVEL STUDIO</div>
+  <select class="novel-sel" id="novel-sel"><option value="">載入中...</option></select>
   <div class="nav-tabs">
-    <button class="nav-tab active" data-page="overview"><em class="tab-icon">🏠</em>總覽</button>
-    <button class="nav-tab" data-page="work"><em class="tab-icon">📜</em>作品</button>
-    <button class="nav-tab" data-page="meetings"><em class="tab-icon">🧠</em>會議室</button>
-    <button class="nav-tab" data-page="logs"><em class="tab-icon">📋</em>日誌</button>
+    <button class="nav-tab active" data-page="overview"><em class="tab-icon">&#x1f3e0;</em>總覽</button>
+    <button class="nav-tab" data-page="work"><em class="tab-icon">&#x1f4dc;</em>作品</button>
+    <button class="nav-tab" data-page="meetings"><em class="tab-icon">&#x1f9e0;</em>會議室</button>
+    <button class="nav-tab" data-page="logs"><em class="tab-icon">&#x1f4cb;</em>日誌</button>
+    <button class="nav-tab" data-page="report"><em class="tab-icon">&#x1f4ca;</em>總編回報</button>
   </div>
   <div class="clock" id="clock"></div>
 </div>
 
 <!-- ══════ OVERVIEW ══════ -->
 <div class="page active" id="page-overview">
+  <div class="pipeline" id="pipeline"></div>
   <div class="ov-main">
     <div class="ov-left">
       <div class="scene-area">
-        <!-- Office -->
         <div class="office" id="office">
           <div class="wall"></div><div class="floor"></div>
           <div class="shelf" style="top:10%;left:5%;width:14%"></div>
@@ -354,56 +429,76 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
           <div class="ptc" style="bottom:15%;left:15%;background:var(--cyan)"></div>
           <div class="ptc" style="bottom:20%;left:50%;background:var(--pur);animation-delay:3s"></div>
           <div class="ptc" style="bottom:12%;left:80%;background:var(--yel);animation-delay:5s"></div>
-          <!-- Desks (use %) -->
-          <div class="desk" style="bottom:16%;left:4%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-editor"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
-          <div class="desk" style="bottom:16%;left:26%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-writer"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
-          <div class="desk" style="bottom:16%;left:48%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-world"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
-          <div class="desk" style="bottom:16%;left:70%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-reader"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
-          <!-- Characters -->
-          <div class="ch idle" id="ch-editor" data-page="agent-editor" style="bottom:30%;left:8%"
-               data-desk-left="8%" data-desk-bottom="30%">
+
+          <!-- Desks with desk accessories -->
+          <div class="desk" style="bottom:16%;left:4%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-editor"></div></div><div class="acc-mug"></div><div class="acc-mug-steam"></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:26%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-writer"></div></div><div class="acc-ink"></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:48%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-world"></div></div><div class="acc-books"><div class="acc-book1"></div><div class="acc-book2"></div><div class="acc-book3"></div></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+          <div class="desk" style="bottom:16%;left:70%"><div class="dsk"><div class="mon"><div class="mon-scr" id="mon-reader"></div></div><div class="acc-notepad"></div><div class="dsk-leg l"></div><div class="dsk-leg r"></div></div></div>
+
+          <!-- H總編 -->
+          <div class="ch idle" id="ch-editor" data-page="agent-editor" style="bottom:30%;left:8%" data-desk-left="8%" data-desk-bottom="30%">
+            <div class="emote-icon" id="emote-editor"></div>
             <div class="bubble" style="border-color:var(--pink);color:var(--pink)" id="bub-editor">等待指示...</div>
             <div class="ch-dot idle" id="dot-editor"></div>
             <div class="ch-body">
-              <div class="ch-head" style="background:linear-gradient(135deg,#ff4081,#c2185b)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
-              <div class="ch-torso" style="background:linear-gradient(135deg,#880e4f,#6a0034)"></div>
+              <div class="ch-head" style="background:linear-gradient(135deg,#ff4081,#c2185b)">
+                <div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div>
+                <div class="acc-glasses"><div class="acc-glasses-bridge"></div></div>
+              </div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#880e4f,#6a0034)"><div class="acc-tie"></div></div>
               <div class="ch-arms"><div class="ch-arm" id="arm-editor-l" style="background:#880e4f"></div><div class="ch-arm" id="arm-editor-r" style="background:#880e4f"></div></div>
             </div>
             <div class="ch-tag" style="color:var(--pink)">H總編</div>
           </div>
-          <div class="ch idle" id="ch-writer" data-page="agent-writer" style="bottom:30%;left:30%"
-               data-desk-left="30%" data-desk-bottom="30%">
+          <!-- H作家 -->
+          <div class="ch idle" id="ch-writer" data-page="agent-writer" style="bottom:30%;left:30%" data-desk-left="30%" data-desk-bottom="30%">
+            <div class="emote-icon" id="emote-writer"></div>
             <div class="bubble" style="border-color:var(--cyan);color:var(--cyan)" id="bub-writer">待命中...</div>
             <div class="ch-dot idle" id="dot-writer"></div>
             <div class="ch-body">
-              <div class="ch-head" style="background:linear-gradient(135deg,#00e5ff,#0097a7)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-head" style="background:linear-gradient(135deg,#00e5ff,#0097a7)">
+                <div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div>
+                <div class="acc-pen"></div><div class="acc-hair"></div>
+              </div>
               <div class="ch-torso" style="background:linear-gradient(135deg,#006064,#004d40)"></div>
               <div class="ch-arms"><div class="ch-arm" id="arm-writer-l" style="background:#006064"></div><div class="ch-arm" id="arm-writer-r" style="background:#006064"></div></div>
             </div>
             <div class="ch-tag" style="color:var(--cyan)">H作家</div>
           </div>
-          <div class="ch idle" id="ch-world" data-page="agent-world" style="bottom:30%;left:52%"
-               data-desk-left="52%" data-desk-bottom="30%">
+          <!-- H世觀 -->
+          <div class="ch idle" id="ch-world" data-page="agent-world" style="bottom:30%;left:52%" data-desk-left="52%" data-desk-bottom="30%">
+            <div class="emote-icon" id="emote-world"></div>
             <div class="bubble" style="border-color:var(--yel);color:var(--yel)" id="bub-world">待命中...</div>
             <div class="ch-dot idle" id="dot-world"></div>
             <div class="ch-body">
-              <div class="ch-head" style="background:linear-gradient(135deg,#ffd740,#f9a825)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
-              <div class="ch-torso" style="background:linear-gradient(135deg,#f57f17,#e65100)"></div>
+              <div class="ch-head" style="background:linear-gradient(135deg,#ffd740,#f9a825)">
+                <div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div>
+                <div class="acc-rglasses"><div class="acc-rglasses-bridge"></div></div>
+              </div>
+              <div class="ch-torso" style="background:linear-gradient(135deg,#f57f17,#e65100)"><div class="acc-mag"></div></div>
               <div class="ch-arms"><div class="ch-arm" id="arm-world-l" style="background:#f57f17"></div><div class="ch-arm" id="arm-world-r" style="background:#f57f17"></div></div>
             </div>
             <div class="ch-tag" style="color:var(--yel)">H世觀</div>
           </div>
-          <div class="ch idle" id="ch-reader" data-page="agent-reader" style="bottom:30%;left:74%"
-               data-desk-left="74%" data-desk-bottom="30%">
+          <!-- H讀者 -->
+          <div class="ch idle" id="ch-reader" data-page="agent-reader" style="bottom:30%;left:74%" data-desk-left="74%" data-desk-bottom="30%">
+            <div class="emote-icon" id="emote-reader"></div>
             <div class="bubble" style="border-color:var(--grn);color:var(--grn)" id="bub-reader">待命中...</div>
             <div class="ch-dot idle" id="dot-reader"></div>
             <div class="ch-body">
-              <div class="ch-head" style="background:linear-gradient(135deg,#69f0ae,#2e7d32)"><div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div></div>
+              <div class="ch-head" style="background:linear-gradient(135deg,#69f0ae,#2e7d32)">
+                <div class="ch-eyes"><div class="ch-eye"></div><div class="ch-eye"></div></div>
+                <div class="acc-hglasses"></div>
+              </div>
               <div class="ch-torso" style="background:linear-gradient(135deg,#1b5e20,#0d3310)"></div>
               <div class="ch-arms"><div class="ch-arm" id="arm-reader-l" style="background:#1b5e20"></div><div class="ch-arm" id="arm-reader-r" style="background:#1b5e20"></div></div>
             </div>
             <div class="ch-tag" style="color:var(--grn)">H讀者</div>
           </div>
+
+          <div class="reject-tracker" id="reject-tracker"></div>
+          <div class="confetti-container" id="confetti"></div>
           <div class="scene-label">- NOVEL STUDIO OFFICE -</div>
         </div>
         <!-- Meeting Room -->
@@ -417,13 +512,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
           <div class="mr-empty-txt" id="mr-empty">目前無會議</div>
         </div>
       </div>
-      <!-- Events strip below scene -->
       <div class="events-strip">
         <div class="events-strip-header"><div class="ev-dot"></div>即時事件</div>
         <div id="rp-events"></div>
       </div>
     </div>
-    <!-- Right panel: stats + chat -->
     <div class="ov-right">
       <div class="stats-compact">
         <div class="stat-c"><div class="stat-c-label">章節</div><div class="stat-c-row"><span class="stat-c-val" style="color:var(--cyan)" id="s-ch">0</span><span class="stat-c-sub" id="s-ch-sub">等待開始</span></div></div>
@@ -437,12 +530,11 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
   </div>
 </div>
 
-<!-- Detail pages (accessible by clicking characters) -->
+<!-- Detail pages -->
 <div class="page" id="page-agent-editor"><div class="detail" id="det-editor"></div></div>
 <div class="page" id="page-agent-writer"><div class="detail" id="det-writer"></div></div>
 <div class="page" id="page-agent-world"><div class="detail" id="det-world"></div></div>
 <div class="page" id="page-agent-reader"><div class="detail" id="det-reader"></div></div>
-<!-- Work page -->
 <div class="page" id="page-work">
   <div class="work-page">
     <div class="work-sidebar">
@@ -453,13 +545,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
     </div>
     <div class="work-content">
       <div class="work-inner">
-        <div class="work-header" id="work-header">
-          <h2>選擇章節</h2>
-          <p style="color:var(--dim);margin-top:8px">從左側選擇要閱讀的章節或設定文件</p>
-        </div>
-        <div class="work-body" id="work-body">
-          <div class="empty"><div class="ei">📜</div>等待作品產出...<p>H作家完成章節後會顯示在這裡</p></div>
-        </div>
+        <div class="work-header" id="work-header"><h2>選擇章節</h2><p style="color:var(--dim);margin-top:8px">從左側選擇要閱讀的章節或設定文件</p></div>
+        <div class="work-body" id="work-body"><div class="empty"><div class="ei">&#x1f4dc;</div>等待作品產出...<p>H作家完成章節後會顯示在這裡</p></div></div>
       </div>
     </div>
   </div>
@@ -474,27 +561,48 @@ body{background:var(--bg);color:var(--tx);font-family:'Noto Sans TC',sans-serif;
       <button class="lf-btn" data-f="status">STATUS</button>
       <button class="lf-btn" data-f="meeting">MEETING</button>
       <button class="lf-btn" data-f="reject">REJECT</button>
+      <button class="lf-btn" data-f="decision">DECISION</button>
     </div>
     <div class="feed-list" id="log-feed"></div>
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Report page -->
+<div class="page" id="page-report">
+  <div class="rp-page">
+    <div class="rp-header">
+      <div class="rp-title">&#x1f4ca; 總編回報</div>
+      <div class="rp-subtitle">H總編向人類老闆的階段性回報摘要</div>
+    </div>
+    <div id="report-cards"></div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal">
   <div class="modal">
-    <div class="modal-hdr"><h3>會議詳情</h3><button class="modal-close" id="modal-close">✕</button></div>
+    <div class="modal-hdr"><h3>會議詳情</h3><button class="modal-close" id="modal-close">&#x2715;</button></div>
     <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
 <script>
 const AG={
-  'H總編':{k:'editor',icon:'📕',c:'#ff4081',role:'CHIEF EDITOR / LEAD',desc:'統籌全局、任務派發、審核成果、關鍵決策。接收人類指示，分解為可執行任務。'},
-  'H作家':{k:'writer',icon:'✍️',c:'#00e5ff',role:'WRITER',desc:'章節撰寫、角色對話、場景描寫、劇情推進。將大綱和設定轉化為引人入勝的文字。'},
-  'H世觀':{k:'world',icon:'🌍',c:'#ffd740',role:'WORLDBUILDER',desc:'世界觀設定、角色背景、設定一致性維護。確保每個細節都有堅實的設定基礎。'},
-  'H讀者':{k:'reader',icon:'📖',c:'#69f0ae',role:'CRITIC / READER',desc:'從讀者視角評估品質、檢查邏輯、提供改進建議。是品質的最後防線。'},
+  'H總編':{k:'editor',icon:'&#x1f4d5;',c:'#ff4081',role:'CHIEF EDITOR / LEAD',
+    desc:'統籌全局、任務派發、審核成果、關鍵決策。接收人類指示，分解為可執行任務。',
+    personality:'嚴謹但溫暖，有大局觀，偶爾幽默。催稿時有趣不失禮。'},
+  'H作家':{k:'writer',icon:'&#x270d;&#xfe0f;',c:'#00e5ff',role:'WRITER',
+    desc:'章節撰寫、角色對話、場景描寫、劇情推進。將大綱和設定轉化為引人入勝的文字。',
+    personality:'感性、有創意、偶爾固執於自己的表達方式。寫到精彩處會興奮分享。'},
+  'H世觀':{k:'world',icon:'&#x1f30d;',c:'#ffd740',role:'WORLDBUILDER',
+    desc:'世界觀設定、角色背景、設定一致性維護。確保每個細節都有堅實的設定基礎。',
+    personality:'嚴謹的學者型，注重邏輯一致性，有時會太鑽牛角尖。'},
+  'H讀者':{k:'reader',icon:'&#x1f4d6;',c:'#69f0ae',role:'CRITIC / READER',
+    desc:'從讀者視角評估品質、檢查邏輯、提供改進建議。是品質的最後防線。',
+    personality:'直率、有同理心，站在讀者角度。熱情稱讚寫得好的地方。'},
 };
 let allLogs=[],prevLen=0,logFilter='all',meetLogs=[];
+let currentNovel='',novels=[];
+let rejectCounts={},lastCelebration=0,emotionTimers={},bubbleTimers={};
 
 // Nav
 document.querySelectorAll('.nav-tab').forEach(t=>t.addEventListener('click',()=>{
@@ -511,6 +619,7 @@ document.querySelectorAll('.ch[data-page]').forEach(c=>c.addEventListener('click
 document.getElementById('mr').addEventListener('click',()=>{if(meetLogs.length)openModal(meetLogs)});
 document.getElementById('modal-close').addEventListener('click',()=>document.getElementById('modal').classList.remove('open'));
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.classList.remove('open')});
+document.getElementById('novel-sel').addEventListener('change',e=>{currentNovel=e.target.value;loadWorkFiles();fetchAll()});
 
 // Clock
 function uc(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}
@@ -521,130 +630,303 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function ft(iso){if(!iso)return'--:--';return new Date(iso).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false})}
 function ac(n){return AG[n]?.c||'#888'}
 
-// Scene
+// ── Registry ──
+async function loadRegistry(){
+  try{
+    const r=await fetch('../novels/registry.md?t='+Date.now());if(!r.ok)return;
+    const t=await r.text();
+    const lines=t.split('\n').filter(l=>l.startsWith('|')&&!l.includes('---')&&!l.includes('slug'));
+    novels=lines.map(l=>{
+      const cols=l.split('|').map(c=>c.trim()).filter(Boolean);
+      return cols.length>=4?{slug:cols[0],name:cols[1],status:cols[2],progress:cols[3]}:null;
+    }).filter(Boolean);
+    const sel=document.getElementById('novel-sel');
+    sel.innerHTML=novels.map(n=>`<option value="${n.slug}">${n.name} (${n.status})</option>`).join('');
+    if(novels.length&&!currentNovel){currentNovel=novels[0].slug;sel.value=currentNovel}
+  }catch{}
+}
+
+// ── Pipeline ──
+const PIPE_STAGES=['接收指示','制定大綱','Kickoff','世觀設定','撰寫章節','並行審查','修改','最終審核','完成'];
+function detectPipelineStage(logs){
+  if(!logs.length)return 0;
+  for(let i=logs.length-1;i>=Math.max(0,logs.length-25);i--){
+    const l=logs[i];const c=(l.content||'').toLowerCase();const t=l.type;const a=l.agent;const to=l.to||'';
+    if(c.includes('最終審核通過')||c.includes('定稿'))return 8;
+    if(c.includes('最終審核'))return 7;
+    if(c.includes('條件通過修改')||c.includes('退件修改'))return 6;
+    if(t==='reject')return 6;
+    if((a==='H讀者'||a==='H世觀')&&(c.includes('審查')||c.includes('審閱')||c.includes('review')||t==='reject'))return 5;
+    if(c.includes('並行審查')||c.includes('啟動審查'))return 5;
+    if((to.includes('H讀者')||to.includes('H世觀'))&&(c.includes('審查')||c.includes('進行')))return 5;
+    if(a==='H作家'&&(c.includes('撰寫')||c.includes('初稿')||c.includes('寫完')))return 4;
+    if(a==='H世觀'&&(c.includes('設定')||c.includes('世界觀')||c.includes('world')))return 3;
+    if(t==='meeting'&&c.includes('kickoff'))return 2;
+    if(c.includes('大綱')||c.includes('outline'))return 1;
+  }
+  return 0;
+}
+function renderPipeline(logs){
+  const stage=detectPipelineStage(logs);
+  const el=document.getElementById('pipeline');
+  // Hide when all done
+  if(stage>=PIPE_STAGES.length-1){el.style.display='none';return}
+  el.style.display='flex';
+  el.innerHTML=
+    `<div class="pipe-label">進度</div>`+
+    PIPE_STAGES.slice(0,-1).map((s,i)=>{ // exclude "完成" since it means hide
+      const cls=i<stage?'done':i===stage?'active':'';
+      return`<div class="pipe-step ${cls}">${i===stage?'<span class="pipe-dot"></span>':''}${s}</div>`;
+    }).join('');
+}
+
+// ── Emotions ──
+function triggerEmotion(agentKey,emotion,icon,duration){
+  const ch=document.getElementById('ch-'+agentKey);
+  const emote=document.getElementById('emote-'+agentKey);
+  if(!ch)return;
+  clearTimeout(emotionTimers[agentKey]);
+  ch.classList.remove('frustrated','excited','celebrating','alert','idle','working','reviewing','meeting');
+  ch.classList.add(emotion);
+  if(emote&&icon){emote.textContent=icon;emote.style.display='block';
+    setTimeout(()=>{emote.style.display='none'},duration||2000)}
+  emotionTimers[agentKey]=setTimeout(()=>ch.classList.remove(emotion),duration||2000);
+}
+function detectEmotions(logs,prevLength){
+  if(logs.length<=prevLength)return;
+  logs.slice(prevLength).forEach(l=>{
+    const c=l.content||'';
+    if(l.type==='reject'&&AG[l.to])triggerEmotion(AG[l.to].k,'frustrated','&#x1f625;',3000);
+    if(c.includes('通過')&&!c.includes('條件通過')&&AG[l.agent])triggerEmotion(AG[l.agent].k,'excited','&#x2728;',2500);
+    if(l.agent==='H作家'&&c.includes('[WIP]'))triggerEmotion('writer','excited','&#x1f4a1;',2500);
+    if(l.agent==='H世觀'&&(c.includes('矛盾')||c.includes('不一致')))triggerEmotion('world','alert','&#x2757;',2000);
+    if(l.agent==='H讀者'&&(c.includes('精彩')||c.includes('太好了')||c.includes('很棒')))triggerEmotion('reader','excited','&#x1f44f;',2500);
+    if(c.includes('最終審核通過')||c.includes('定稿')||c.includes('慶祝')){
+      if(Date.now()-lastCelebration>10000){
+        lastCelebration=Date.now();
+        Object.values(AG).forEach(a=>triggerEmotion(a.k,'celebrating','&#x1f389;',4000));
+        spawnConfetti();
+      }
+    }
+  });
+}
+
+// ── Reject tracker ──
+function updateRejectTracker(logs){
+  rejectCounts={};
+  logs.forEach(l=>{if(l.type==='reject'&&l.to)rejectCounts[l.to]=(rejectCounts[l.to]||0)+1});
+  document.getElementById('reject-tracker').innerHTML=Object.entries(rejectCounts).map(([name,count])=>{
+    const a=AG[name];if(!a)return'';
+    const warn=count>=2;
+    const dots=Array.from({length:3},(_,i)=>`<div class="rt-dot${i<count?' filled':''}"></div>`).join('');
+    return`<div class="rt-item${count>0?' show':''}${warn?' warn':''}" style="color:${a.c}">${name} <div class="rt-dots">${dots}</div>${warn?' &#x26a0;':''}</div>`;
+  }).join('');
+}
+
+// ── Confetti ──
+function spawnConfetti(){
+  const ct=document.getElementById('confetti');
+  const colors=['#ff4081','#00e5ff','#ffd740','#69f0ae','#b388ff','#ffab40'];
+  for(let i=0;i<40;i++){
+    const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'%';c.style.top=(Math.random()*30+10)+'%';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDelay=Math.random()+'s';ct.appendChild(c);
+  }
+  setTimeout(()=>{ct.innerHTML=''},3500);
+}
+
+// ── Scene ──
 function updateScene(logs){
   const st={},bub={};
-  logs.forEach(l=>{if(l.type==='status'&&AG[l.agent])st[l.agent]=l.content;if(AG[l.agent])bub[l.agent]=l.content});
+  logs.forEach(l=>{if(l.type==='status'&&AG[l.agent])st[l.agent]=l.content;if(AG[l.agent]&&(l.type==='message'||l.type==='status'||l.type==='meeting'))bub[l.agent]=l.content});
   const inMeeting=new Set();
+  // Detect ongoing meeting: find the last meeting-related status for each agent
+  // Also check if there are recent type:"meeting" logs without a subsequent idle status
+  const lastMeetingLog=logs.filter(l=>l.type==='meeting').slice(-1)[0];
+  const meetingActive=lastMeetingLog&&!logs.slice(logs.indexOf(lastMeetingLog)).some(l=>l.type==='status'&&l.content&&l.content.toLowerCase().includes('idle')&&l.agent===lastMeetingLog.agent);
   Object.entries(AG).forEach(([name,a])=>{
     const ch=document.getElementById('ch-'+a.k);if(!ch)return;
+    if(ch.classList.contains('frustrated')||ch.classList.contains('excited')||ch.classList.contains('celebrating')||ch.classList.contains('alert'))return;
     const s=(st[name]||'').toLowerCase();
     let state='idle';
     if(s.includes('work')||s.includes('寫')||s.includes('設定')||s.includes('撰寫'))state='working';
     else if(s.includes('review')||s.includes('審')||s.includes('閱讀'))state='reviewing';
-    else if(s.includes('meet')||s.includes('開會'))state='meeting';
-    if(state==='meeting'){inMeeting.add(name);ch.style.left='-200px';ch.style.bottom='-200px'}
+    else if(s.includes('meet')||s.includes('開會')||s.includes('meeting'))state='meeting';
+    if(state==='meeting'){inMeeting.add(name);ch.style.left='88%';ch.style.bottom='50%'}
     else{ch.style.left=ch.dataset.deskLeft;ch.style.bottom=ch.dataset.deskBottom}
-    ch.className='ch '+state+(state!=='idle'?' speaking':'');
+    if(state!=='idle'){
+      clearTimeout(bubbleTimers[a.k]);
+      ch.className='ch '+state+' speaking';
+    }else if(ch.classList.contains('speaking')){
+      clearTimeout(bubbleTimers[a.k]);
+      ch.className='ch idle speaking';
+      bubbleTimers[a.k]=setTimeout(()=>{const el=document.getElementById('ch-'+a.k);if(el&&!el.classList.contains('working')&&!el.classList.contains('reviewing')&&!el.classList.contains('meeting'))el.classList.remove('speaking')},6000);
+    }else{ch.className='ch idle'}
     document.getElementById('dot-'+a.k).className='ch-dot '+(state==='reviewing'?'reviewing':state);
     const mon=document.getElementById('mon-'+a.k);if(mon)mon.className='mon-scr'+(state==='working'?' typing':'');
     const al=document.getElementById('arm-'+a.k+'-l'),ar=document.getElementById('arm-'+a.k+'-r');
     if(al)al.className='ch-arm'+(state==='working'?' typing':'');
     if(ar)ar.className='ch-arm'+(state==='working'?' typing':'');
     const b=document.getElementById('bub-'+a.k);
-    if(bub[name]){const t=bub[name];b.textContent=t.length>20?t.substring(0,20)+'...':t}
+    if(bub[name])b.textContent=bub[name];
   });
-  // Meeting room
   const badge=document.getElementById('mr-badge'),avs=document.getElementById('mr-avatars'),emp=document.getElementById('mr-empty');
   meetLogs=logs.filter(l=>l.type==='meeting');
   if(inMeeting.size>0){
     emp.style.display='none';badge.className='mr-badge on';badge.textContent='會議中 ('+inMeeting.size+'人)';
     avs.innerHTML=[...inMeeting].map(n=>{const a=AG[n];return`<div class="mr-av"><div class="mr-av-icon" style="background:${a.c}22;border:1px solid ${a.c}">${a.icon}</div><div class="mr-av-name" style="color:${a.c}">${n}</div></div>`}).join('');
-  } else {
-    emp.style.display='';badge.className='mr-badge off';badge.textContent='空閒中';avs.innerHTML='';
-  }
+  }else{emp.style.display='';badge.className='mr-badge off';badge.textContent='空閒中';avs.innerHTML=''}
 }
 
-// Chat panel (即時動態 = message, meeting, reject, decision)
+// ── Chat panel ──
 let prevChatLen=0;
 function updateChat(logs){
   const el=document.getElementById('rp-chat');
   const msgs=logs.filter(l=>l.type==='message'||l.type==='meeting'||l.type==='reject'||l.type==='decision');
-  if(!msgs.length){el.innerHTML='<div class="empty"><div class="ei">💬</div>等待對話...<p>Agent 之間的對話、會議、退件會顯示在這裡</p></div>';return}
-  const recent=msgs.slice(-30).reverse();
-  const newCount=msgs.length-prevChatLen;
+  if(!msgs.length){el.innerHTML='<div class="empty"><div class="ei">&#x1f4ac;</div>等待對話...<p>Agent 之間的對話、會議、退件會顯示在這裡</p></div>';return}
+  const recent=msgs.slice(-30).reverse();const newCount=msgs.length-prevChatLen;
   el.innerHTML=recent.map((l,i)=>{
     const isNew=i<newCount&&prevChatLen>0;
-    return`<div class="cm${isNew?' new-msg':''}">
-      <div class="cm-head">
-        <span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
-        ${l.to?`<span class="cm-arrow">→</span><span class="cm-agent" style="color:${ac(l.to)}">${l.to}</span>`:''}
-        <span class="cm-type ${l.type}">${(l.type||'').toUpperCase()}</span>
-        <span class="cm-time">${ft(l.timestamp)}</span>
-      </div>
-      <div class="cm-text">${esc(l.content||'')}</div>
-    </div>`;
+    return`<div class="cm${isNew?' new-msg':''}"><div class="cm-head"><span class="cm-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>${l.to?`<span class="cm-arrow">&#x2192;</span><span class="cm-agent" style="color:${ac(l.to)}">${l.to}</span>`:''}<span class="cm-type ${l.type}">${(l.type||'').toUpperCase()}</span>${l.novel?`<span class="fi-novel">${l.novel}</span>`:''}<span class="cm-time">${ft(l.timestamp)}</span></div><div class="cm-text">${esc(l.content||'')}</div></div>`;
   }).join('');
   prevChatLen=msgs.length;
 }
 
-// Events panel (即時事件 = task, status)
+// ── Events panel ──
 let prevEvtLen=0;
 function updateEvents(logs){
   const el=document.getElementById('rp-events');
   const evts=logs.filter(l=>l.type==='task'||l.type==='status');
-  if(!evts.length){el.innerHTML='<div class="empty"><div class="ei">📋</div>等待事件...<p>任務分派、狀態變更會顯示在這裡</p></div>';return}
-  const recent=evts.slice(-30).reverse();
-  const newCount=evts.length-prevEvtLen;
+  if(!evts.length){el.innerHTML='<div class="empty"><div class="ei">&#x1f4cb;</div>等待事件...</div>';return}
+  const recent=evts.slice(-30).reverse();const newCount=evts.length-prevEvtLen;
   el.innerHTML=recent.map((l,i)=>{
     const isNew=i<newCount&&prevEvtLen>0;
-    const icon=l.type==='task'?(l.content?.startsWith('完成')?'✅':'🔄'):'📡';
-    return`<div class="fi${isNew?' new-msg':''}">
-      <span style="margin-right:2px">${icon}</span>
-      <span class="fi-time">${ft(l.timestamp)}</span>
-      <span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span>
-      <span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span>
-      <span class="fi-content">${esc(l.content||'')}</span>
-    </div>`;
+    const icon=l.type==='task'?(l.content?.startsWith('完成')?'&#x2705;':'&#x1f504;'):'&#x1f4e1;';
+    return`<div class="fi${isNew?' new-msg':''}"><span style="margin-right:2px">${icon}</span><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.novel?`<span class="fi-novel">${l.novel}</span>`:''}</div>`;
   }).join('');
   prevEvtLen=evts.length;
 }
 
-// Stats
+// ── Stats ──
 function updateStats(logs){
   const tasks=logs.filter(l=>l.type==='task');
   const done=tasks.filter(l=>/^完成/.test(l.content)).length;
   const inP=tasks.length-done;
-  document.getElementById('s-ch').textContent=logs.filter(l=>l.type==='task'&&/完成.*章/.test(l.content)).length;
-  document.getElementById('s-ch-sub').textContent=done?`已完成`:'等待開始';
+  const chDone=logs.filter(l=>l.type==='task'&&(/完成.*章/.test(l.content)||/定稿/.test(l.content))).length;
+  document.getElementById('s-ch').textContent=chDone;
+  document.getElementById('s-ch-sub').textContent=chDone?'已完成':'等待開始';
   document.getElementById('s-task').textContent=done;
   document.getElementById('s-task-sub').textContent=inP+' 進行中';
   document.getElementById('s-rej').textContent=logs.filter(l=>l.type==='reject').length;
   document.getElementById('s-meet').textContent=logs.filter(l=>l.type==='meeting').length;
 }
 
-// Agent detail
+// ── Agent detail ──
 function renderDetail(name,logs){
   const a=AG[name];if(!a)return;const el=document.getElementById('det-'+a.k);
   const al=logs.filter(l=>l.agent===name||l.to===name);
   const tl=al.filter(l=>l.type==='task'),ml=al.filter(l=>l.type==='message');
   const rl=logs.filter(l=>l.type==='reject'&&(l.agent===name||l.to===name));
   const sl=al.filter(l=>l.type==='status');const ls=sl.length?sl[sl.length-1].content:'idle';
+  const rejTo=logs.filter(l=>l.type==='reject'&&l.to===name).length;
   el.innerHTML=`<div class="hero"><div class="hero-av" style="border-color:${a.c}">${a.icon}<div class="hero-st" style="background:${a.c}22;color:${a.c};border:1px solid ${a.c}44">${esc(ls).toUpperCase()}</div></div>
     <div class="hero-info"><h2 style="color:${a.c}">${name}</h2><div class="hero-role" style="color:${a.c}99">${a.role}</div><div class="hero-desc">${a.desc}</div>
+    <div class="hero-personality" style="border-color:${a.c};color:${a.c}cc">${a.personality}</div>
     <div class="hero-nums"><div class="hn"><div class="hn-v" style="color:var(--cyan)">${tl.length}</div><div class="hn-l">任務</div></div>
     <div class="hn"><div class="hn-v" style="color:var(--pur)">${ml.length}</div><div class="hn-l">訊息</div></div>
-    <div class="hn"><div class="hn-v" style="color:var(--pink)">${rl.length}</div><div class="hn-l">退件</div></div></div></div></div>
-    <div class="sec"><div class="sec-h">活動時間軸</div><div class="sec-b">${al.length?al.slice(-30).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to&&l.to!==name?`<span class="fi-arrow">→ <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}</div>`).join(''):'<div class="empty"><div class="ei">⏳</div>尚無活動</div>'}</div></div>
-    <div class="sec"><div class="sec-h">對話記錄</div><div class="sec-b">${ml.length?ml.slice(-20).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent}</span><span class="fi-arrow">→</span><span class="fi-agent" style="color:${ac(l.to)}">${l.to||'ALL'}</span><span class="fi-content">${esc(l.content||'')}</span></div>`).join(''):'<div class="empty"><div class="ei">💬</div>尚無對話</div>'}</div></div>`;
+    <div class="hn"><div class="hn-v" style="color:var(--pink)">${rl.length}</div><div class="hn-l">退件</div></div>
+    ${rejTo?`<div class="hn"><div class="hn-v" style="color:var(--org)">${rejTo}</div><div class="hn-l">被退</div></div>`:''}</div></div></div>
+    <div class="sec"><div class="sec-h">活動時間軸</div><div class="sec-b">${al.length?al.slice(-30).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to&&l.to!==name?`<span class="fi-arrow">&#x2192; <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}</div>`).join(''):'<div class="empty"><div class="ei">&#x23f3;</div>尚無活動</div>'}</div></div>
+    <div class="sec"><div class="sec-h">對話記錄</div><div class="sec-b">${ml.length?ml.slice(-20).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent}</span><span class="fi-arrow">&#x2192;</span><span class="fi-agent" style="color:${ac(l.to)}">${l.to||'ALL'}</span><span class="fi-content">${esc(l.content||'')}</span></div>`).join(''):'<div class="empty"><div class="ei">&#x1f4ac;</div>尚無對話</div>'}</div></div>`;
 }
 
-// Meetings page
+// ── Meetings ──
 function renderMeetings(logs){
   const el=document.getElementById('meetings-ct');const ms=logs.filter(l=>l.type==='meeting');
-  if(!ms.length){el.innerHTML='<div class="empty" style="margin-top:80px"><div class="ei">🧠</div><p style="font-size:15px">尚無會議記錄</p><p>退件達 2 次或重大決策時觸發</p></div>';return}
-  el.innerHTML='<div class="feed-title" style="margin-top:24px">會議記錄</div>'+ms.slice(-10).reverse().map(m=>`<div class="m-card"><div class="m-card-h"><span class="fi-type meeting" style="font-size:12px">MEETING</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim)">${ft(m.timestamp)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${ac(m.agent)}">${m.agent}</span></div><div class="m-body">${esc(m.content||'')}</div></div>`).join('');
+  if(!ms.length){el.innerHTML='<div class="empty" style="margin-top:80px"><div class="ei">&#x1f9e0;</div><p style="font-size:15px">尚無會議記錄</p><p>退件達 2 次或重大決策時觸發</p></div>';return}
+  el.innerHTML='<div class="feed-title" style="margin-top:24px">會議記錄</div>'+ms.slice(-10).reverse().map(m=>`<div class="m-card"><div class="m-card-h"><span class="fi-type meeting" style="font-size:12px">MEETING</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--dim)">${ft(m.timestamp)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:${ac(m.agent)}">${m.agent}</span>${m.novel?`<span class="fi-novel">${m.novel}</span>`:''}</div><div class="m-body">${esc(m.content||'')}</div></div>`).join('');
 }
 
-// Log page
+// ── Log page ──
 function renderLogs(logs){
   const el=document.getElementById('log-feed');const f=logFilter==='all'?logs:logs.filter(l=>l.type===logFilter);
-  if(!f.length){el.innerHTML='<div class="empty"><div class="ei">📋</div>無符合日誌</div>';return}
-  el.innerHTML=f.slice(-60).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to?`<span class="fi-arrow">→ <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}</div>`).join('');
+  if(!f.length){el.innerHTML='<div class="empty"><div class="ei">&#x1f4cb;</div>無符合日誌</div>';return}
+  el.innerHTML=f.slice(-60).reverse().map(l=>`<div class="fi"><span class="fi-time">${ft(l.timestamp)}</span><span class="fi-agent" style="color:${ac(l.agent)}">${l.agent||'?'}</span><span class="fi-type ${l.type}">${(l.type||'').toUpperCase()}</span><span class="fi-content">${esc(l.content||'')}</span>${l.to?`<span class="fi-arrow">&#x2192; <span style="color:${ac(l.to)}">${l.to}</span></span>`:''}${l.novel?`<span class="fi-novel">${l.novel}</span>`:''}</div>`).join('');
 }
 document.querySelectorAll('.lf-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.lf-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');logFilter=b.dataset.f;renderLogs(allLogs)}));
 
-// Modal
+// ── Report page ──
+function renderReport(logs){
+  const el=document.getElementById('report-cards');
+  // Collect report-type logs AND auto-generate summary from key milestones
+  const reports=logs.filter(l=>l.type==='report');
+  const cards=[];
+
+  // Auto-generated summary cards from milestone events
+  // Find chapter completions (final approval)
+  const milestones=logs.filter(l=>l.agent==='H總編'&&l.type==='task'&&(/最終審核通過/.test(l.content)||/定稿/.test(l.content)));
+  milestones.forEach(m=>{
+    // Gather context around this milestone
+    const ts=new Date(m.timestamp).getTime();
+    const nearLogs=logs.filter(l=>{const lt=new Date(l.timestamp).getTime();return Math.abs(lt-ts)<3600000}); // within 1 hour
+    const rejects=nearLogs.filter(l=>l.type==='reject').length;
+    const reviews=nearLogs.filter(l=>(l.agent==='H讀者'||l.agent==='H世觀')&&l.type==='task'&&/審/.test(l.content)).length;
+    const msgs=nearLogs.filter(l=>l.type==='message'&&l.agent==='H總編');
+    const lastMsg=msgs.length?msgs[msgs.length-1].content:'';
+    cards.push({type:'auto',timestamp:m.timestamp,content:m.content,rejects,reviews:reviews||1,lastMsg,novel:m.novel||''});
+  });
+
+  // Add explicit report entries
+  reports.forEach(r=>cards.push({type:'report',timestamp:r.timestamp,content:r.content,novel:r.novel||''}));
+
+  // Sort by time desc
+  cards.sort((a,b)=>new Date(b.timestamp)-new Date(a.timestamp));
+
+  if(!cards.length){
+    // Show auto-summary from all available data
+    const totalTasks=logs.filter(l=>l.type==='task').length;
+    const totalMsgs=logs.filter(l=>l.type==='message').length;
+    const totalRejects=logs.filter(l=>l.type==='reject').length;
+    const totalMeetings=logs.filter(l=>l.type==='meeting').length;
+    const lastStatus=logs.filter(l=>l.agent==='H總編'&&l.type==='status');
+    const ls=lastStatus.length?lastStatus[lastStatus.length-1].content:'等待開始';
+    const lastReport=logs.filter(l=>l.agent==='H總編'&&l.type==='message'&&l.to==='人類老闆');
+    const lr=lastReport.length?lastReport[lastReport.length-1]:{content:'尚無回報',timestamp:''};
+
+    el.innerHTML=`<div class="rp-card"><div class="rp-card-hdr"><span class="rp-badge auto">AUTO-SUMMARY</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--pink)">H總編</span><span class="rp-card-time">${ft(lr.timestamp)||'--:--'}</span></div>
+      <div class="rp-card-body">
+        <div class="rp-summary">${esc(ls)}</div>
+        <div class="rp-grid">
+          <div class="rp-metric"><div class="rp-metric-label">總任務數</div><div class="rp-metric-val" style="color:var(--cyan)">${totalTasks}</div></div>
+          <div class="rp-metric"><div class="rp-metric-label">訊息數</div><div class="rp-metric-val" style="color:var(--pur)">${totalMsgs}</div></div>
+          <div class="rp-metric"><div class="rp-metric-label">退件數</div><div class="rp-metric-val" style="color:var(--pink)">${totalRejects}</div></div>
+          <div class="rp-metric"><div class="rp-metric-label">會議數</div><div class="rp-metric-val" style="color:var(--yel)">${totalMeetings}</div></div>
+        </div>
+        <div class="rp-section"><div class="rp-section-title">最新回報</div><div class="rp-section-body">${esc(lr.content)}</div></div>
+      </div></div>`;
+    return;
+  }
+
+  el.innerHTML=cards.map(c=>{
+    if(c.type==='report'){
+      return`<div class="rp-card"><div class="rp-card-hdr"><span class="rp-badge report">REPORT</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--pink)">H總編</span>${c.novel?`<span class="fi-novel">${c.novel}</span>`:''}<span class="rp-card-time">${ft(c.timestamp)}</span></div>
+        <div class="rp-card-body"><div class="rp-section-body" style="white-space:pre-wrap">${esc(c.content)}</div></div></div>`;
+    }
+    // auto card
+    return`<div class="rp-card"><div class="rp-card-hdr"><span class="rp-badge auto">MILESTONE</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--pink)">H總編</span>${c.novel?`<span class="fi-novel">${c.novel}</span>`:''}<span class="rp-card-time">${ft(c.timestamp)}</span></div>
+      <div class="rp-card-body">
+        <div class="rp-summary">${esc(c.content)}</div>
+        <div class="rp-grid">
+          <div class="rp-metric"><div class="rp-metric-label">審查輪數</div><div class="rp-metric-val" style="color:var(--yel)">${c.reviews}</div></div>
+          <div class="rp-metric"><div class="rp-metric-label">退件次數</div><div class="rp-metric-val" style="color:var(--pink)">${c.rejects}</div></div>
+        </div>
+        ${c.lastMsg?`<div class="rp-section"><div class="rp-section-title">總編備註</div><div class="rp-section-body">${esc(c.lastMsg)}</div></div>`:''}
+      </div></div>`;
+  }).join('');
+}
+
+// ── Modal ──
 function openModal(ml){
   const body=document.getElementById('modal-body');
   const agents=new Set();ml.forEach(l=>{if(l.agent)agents.add(l.agent)});
@@ -652,146 +934,92 @@ function openModal(ml){
   document.getElementById('modal').classList.add('open');
 }
 
-// Fetch
+// ── Fetch ──
 async function fetchAll(){
   try{const r=await fetch('../logs/activity.jsonl?t='+Date.now());if(!r.ok)return;const t=await r.text();
-  prevLen=allLogs.length;allLogs=t.trim().split('\n').filter(Boolean).map(l=>{try{return JSON.parse(l)}catch{return null}}).filter(Boolean)}catch{}
+  const oldLen=allLogs.length;
+  allLogs=t.trim().split('\n').filter(Boolean).map(l=>{try{return JSON.parse(l)}catch{return null}}).filter(Boolean);
+  allLogs.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+  detectEmotions(allLogs,oldLen)}catch{}
   updateScene(allLogs);updateChat(allLogs);updateEvents(allLogs);updateStats(allLogs);
-  Object.keys(AG).forEach(n=>renderDetail(n,allLogs));renderMeetings(allLogs);renderLogs(allLogs);
+  renderPipeline(allLogs);updateRejectTracker(allLogs);
+  Object.keys(AG).forEach(n=>renderDetail(n,allLogs));renderMeetings(allLogs);renderLogs(allLogs);renderReport(allLogs);
 }
-// ── Work page: fetch novels, chapters & settings ──
-let currentNovel='goblin-hero'; // default, can be switched
-function novelBase(){return `../novels/${currentNovel}/`}
-function getWorkFiles(){return[
-  {path:novelBase()+'outline.md',label:'大綱',ch:'📋'},
-  ...[1,2,3,4,5,6,7,8,9,10].map(n=>({path:novelBase()+`chapters/ch${String(n).padStart(2,'0')}.md`,label:`第${n}章`,ch:String(n).padStart(2,'0')}))
-]}
-function getSettingFiles(){return[
-  {path:novelBase()+'worldbuilding/world.md',label:'世界觀'},
-  {path:novelBase()+'worldbuilding/characters.md',label:'角色設定'},
-  {path:novelBase()+'worldbuilding/settings.md',label:'特殊設定'},
-  {path:novelBase()+'worldbuilding/continuity.md',label:'連續性追蹤'},
-]}
-let workCache={};
 
-// Simple markdown to HTML
+// ── Work page ──
+let workCache={};
 function md2html(md){
-  return md
-    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
-    .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
-    .replace(/^---$/gm,'<hr>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/^- (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
-    .replace(/\n\n/g,'</p><p>')
+  md=md.replace(/^---\n[\s\S]*?\n---\n?/,'');
+  return md.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/^---$/gm,'<hr>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>').replace(/\n\n/g,'</p><p>')
     .replace(/^(?!<[hublop])/gm,function(m,o,s){return s[o]==='\n'?'':'<p>'})
     .replace(/<p><(h[123]|blockquote|hr|ul|li)/g,'<$1')
-    .replace(/<\/(h[123]|blockquote|ul)><\/p>/g,'</$1>')
-    .replace(/<p><\/p>/g,'');
+    .replace(/<\/(h[123]|blockquote|ul)><\/p>/g,'</$1>').replace(/<p><\/p>/g,'');
 }
 
 async function loadWorkFiles(){
-  const nav=document.getElementById('work-nav');
-  const navSettings=document.getElementById('work-nav-settings');
-  let chapItems='',setItems='';
-
-  const WORK_FILES=getWorkFiles(),SETTING_FILES=getSettingFiles();
-  for(const f of WORK_FILES){
-    try{
-      const r=await fetch(f.path+'?t='+Date.now());
-      if(r.ok){const txt=await r.text();workCache[f.path]=txt;
-        chapItems+=`<button class="work-nav-item" data-path="${f.path}"><span class="wni-ch">${f.ch}</span>${f.label}</button>`;
-      }
-    }catch{}
-  }
-  for(const f of SETTING_FILES){
-    try{
-      const r=await fetch(f.path+'?t='+Date.now());
-      if(r.ok){const txt=await r.text();workCache[f.path]=txt;
-        setItems+=`<button class="work-nav-item" data-path="${f.path}">${f.label}</button>`;
-      }
-    }catch{}
-  }
-
-  nav.innerHTML=chapItems||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無章節</div>';
-  navSettings.innerHTML=setItems||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無設定</div>';
-
-  // Click handlers
-  document.querySelectorAll('.work-nav-item').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.work-nav-item').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const p=btn.dataset.path;
-      const content=workCache[p]||'';
-      const allFiles=[...getWorkFiles(),...getSettingFiles()];
-      const info=allFiles.find(f=>f.path===p);
-      document.getElementById('work-header').innerHTML=`<h2>${info?.label||'文件'}</h2>`;
-      document.getElementById('work-body').innerHTML=md2html(content);
-    });
-  });
-
-  // Auto-select first available
-  const first=document.querySelector('.work-nav-item');
-  if(first)first.click();
+  if(!currentNovel)return;
+  const base='../novels/'+currentNovel+'/';
+  workCache={};
+  const chFiles=[{path:base+'outline.md',label:'大綱',ch:'&#x1f4cb;'}];
+  for(let i=1;i<=10;i++){const n=String(i).padStart(2,'0');chFiles.push({path:base+'chapters/ch'+n+'.md',label:'第'+i+'章',ch:n})}
+  const stFiles=[
+    {path:base+'worldbuilding/world.md',label:'世界觀'},
+    {path:base+'worldbuilding/characters.md',label:'角色設定'},
+    {path:base+'worldbuilding/settings.md',label:'特殊設定'},
+    {path:base+'worldbuilding/continuity.md',label:'連續性追蹤'},
+  ];
+  const tryFetch=async f=>{try{const r=await fetch(f.path+'?t='+Date.now());if(r.ok){workCache[f.path]=await r.text();return f}}catch{}return null};
+  const [chRes,stRes]=await Promise.all([Promise.all(chFiles.map(tryFetch)),Promise.all(stFiles.map(tryFetch))]);
+  const nav=document.getElementById('work-nav'),navS=document.getElementById('work-nav-settings');
+  nav.innerHTML=chRes.filter(Boolean).map(f=>`<button class="work-nav-item" data-path="${f.path}"><span class="wni-ch">${f.ch}</span>${f.label}</button>`).join('')||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無章節</div>';
+  navS.innerHTML=stRes.filter(Boolean).map(f=>`<button class="work-nav-item" data-path="${f.path}">${f.label}</button>`).join('')||'<div style="padding:10px 20px;font-size:12px;color:var(--dim)">尚無設定</div>';
+  document.querySelectorAll('.work-nav-item').forEach(btn=>btn.addEventListener('click',()=>{
+    document.querySelectorAll('.work-nav-item').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('work-header').innerHTML='<h2>'+btn.textContent+'</h2>';
+    document.getElementById('work-body').innerHTML=md2html(workCache[btn.dataset.path]||'');
+  }));
+  const first=document.querySelector('.work-nav-item');if(first)first.click();
 }
 
-loadWorkFiles();setInterval(loadWorkFiles,10000);
-
-fetchAll();setInterval(fetchAll,3000);
-
-// ── Idle life: random walking & self-talk ──
+// ── Idle life ──
 const IDLE_TALK={
-  'H總編':['看看進度如何...','嗯，故事走向不錯','喝杯咖啡','翻翻企劃書...','思考下一步...','催稿催稿...','節奏感要再抓一下','大綱需要微調嗎...'],
-  'H作家':['靈感來了...','這段對話要更自然','角色的心情是...','喝口茶再繼續','翻翻參考資料...','這個轉折夠不夠...','措辭再推敲一下','寫到停不下來...'],
-  'H世觀':['地圖畫得差不多了','這個種族設定有趣','魔法體系要平衡...','歷史年表核對中...','角色關係整理一下','這個設定會矛盾嗎...','翻翻世界觀筆記','地理位置要合理...'],
-  'H讀者':['這段讀起來很流暢','嗯，有個小漏洞...','節奏感不錯','角色動機合理嗎...','翻到精彩的地方了','記個筆記...','這裡可以更好','作為讀者我會期待...'],
+  'H總編':['看看進度如何...','嗯，故事走向不錯','喝杯咖啡','翻翻企劃書...','思考下一步...','催稿催稿...','節奏感要再抓一下','大綱需要微調嗎...','該開個會對齊一下','品質不能妥協啊'],
+  'H作家':['靈感來了...','這段對話要更自然','角色的心情是...','喝口茶再繼續','翻翻參考資料...','這個轉折夠不夠...','措辭再推敲一下','寫到停不下來...','這段太精彩了！','讓角色活起來...'],
+  'H世觀':['地圖畫得差不多了','這個種族設定有趣','魔法體系要平衡...','歷史年表核對中...','角色關係整理一下','這個設定會矛盾嗎...','翻翻世界觀筆記','地理位置要合理...','時間線沒問題吧...','再檢查一遍...'],
+  'H讀者':['這段讀起來很流暢','嗯，有個小漏洞...','節奏感不錯','角色動機合理嗎...','翻到精彩的地方了','記個筆記...','這裡可以更好','作為讀者我會期待...','讀者會買帳嗎...','情感共鳴夠不夠'],
 };
-const WALK_OFFSETS=[
-  {dx:0,dy:0},      // at desk
-  {dx:30,dy:-10},   // slightly right
-  {dx:-20,dy:-5},   // slightly left
-  {dx:15,dy:8},     // slightly forward
-  {dx:-10,dy:-15},  // wander back
-];
-const idleState={};
-Object.keys(AG).forEach(n=>{idleState[n]={walkIdx:0,talkTimer:0}});
-
+const WALK_OFFSETS=[{dx:0,dy:0},{dx:30,dy:-10},{dx:-20,dy:-5},{dx:15,dy:8},{dx:-10,dy:-15}];
+const idleState={};Object.keys(AG).forEach(n=>{idleState[n]={walkIdx:0,talkTimer:0}});
 function idleLife(){
   Object.entries(AG).forEach(([name,a])=>{
     const ch=document.getElementById('ch-'+a.k);
     if(!ch||!ch.classList.contains('idle'))return;
     const st=idleState[name];
-
-    // Random walk (20% chance every tick)
     if(Math.random()<0.2){
       st.walkIdx=(st.walkIdx+1)%WALK_OFFSETS.length;
-      // Sometimes go back to desk
-      if(Math.random()<0.4) st.walkIdx=0;
-      const baseLeft=parseFloat(ch.dataset.deskLeft);
-      const baseBottom=parseFloat(ch.dataset.deskBottom);
+      if(Math.random()<0.4)st.walkIdx=0;
+      const bL=parseFloat(ch.dataset.deskLeft),bB=parseFloat(ch.dataset.deskBottom);
       const w=WALK_OFFSETS[st.walkIdx];
-      ch.style.left=`calc(${baseLeft}% + ${w.dx}px)`;
-      ch.style.bottom=`calc(${baseBottom}% + ${w.dy}px)`;
+      ch.style.left=`calc(${bL}% + ${w.dx}px)`;ch.style.bottom=`calc(${bB}% + ${w.dy}px)`;
     }
-
-    // Random self-talk (15% chance every tick)
     if(Math.random()<0.15){
-      const talks=IDLE_TALK[name]||[];
-      const talk=talks[Math.floor(Math.random()*talks.length)];
+      const talks=IDLE_TALK[name]||[];const talk=talks[Math.floor(Math.random()*talks.length)];
       const bub=document.getElementById('bub-'+a.k);
-      if(bub&&talk){
-        bub.textContent=talk;
-        ch.classList.add('speaking');
-        clearTimeout(st.talkTimer);
-        st.talkTimer=setTimeout(()=>ch.classList.remove('speaking'),3000);
-      }
+      if(bub&&talk){bub.textContent=talk;ch.classList.add('speaking');clearTimeout(st.talkTimer);
+        st.talkTimer=setTimeout(()=>ch.classList.remove('speaking'),3000)}
     }
   });
 }
 setInterval(idleLife,4000);
+
+// ── Init ──
+(async()=>{await loadRegistry();await fetchAll();await loadWorkFiles()})();
+setInterval(fetchAll,3000);setInterval(loadWorkFiles,10000);
 </script>
 </body>
 </html>
